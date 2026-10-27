@@ -119,8 +119,16 @@ The three backgrounds blend over an opaque middle plate, with continuous sunset 
 
 ## Sound design
 
-Begin the journey to enable audio. The mix adds a quiet looping wind/insect bed, a warm sanctuary drone, earth/wood/stone footsteps, jump/landing, distinct poke/slash whooshes, hit/hurt cues, positional lion warning/charge/defeat cues, death and a short rescue chord. This is original synthesized sound, with no external samples, downloads or runtime dependencies. The lion cues are stylized synthesized growls, not wildlife recordings.
+Begin the journey to enable audio. The mix adds a quiet looping wind/insect bed, a warm sanctuary drone, earth/wood/stone footsteps, jump/landing, distinct poke/slash whooshes, hit/hurt cues, positional lion warning/charge/defeat cues, death and a short rescue chord. This is original synthesized sound, with no external samples or runtime dependencies. The original score loads from two local compressed audio files. The lion cues are stylized synthesized growls, not wildlife recordings.
 
-**M** or the note button mutes everything. Open **Sound settings** below the game for separate **Effects** and **Atmosphere** levels. Preferences persist on this browser when storage is available. Audio starts after a player gesture, fades/suspends on pause or losing focus, and resumes with the journey. Restart clears old effects; unsupported audio leaves gameplay available.
+**M** or the note button mutes everything. Open **Sound settings** below the game for separate **Effects**, **Atmosphere** and **Music** levels. Preferences persist on this browser when storage is available. Audio starts after a player gesture, fades/suspends on pause or losing focus, and resumes with the journey. Restart clears old effects; unsupported audio leaves gameplay available.
 
 [Listen to the 24-second sound reel](docs/audio/sound-pass.ogg) · [Sound architecture, cue list and verification](docs/SOUND.md). The reel uses the same original PCM generators in a staged sequence, not a gameplay recording. Browser playback and listening balance still need local review.
+
+## Background score
+
+An original 48-second, 80 BPM sunset theme accompanies the full journey: wooden plucked tones, soft bass, light percussion and sustained harmony. A synchronized brighter layer enters near the sanctuary. Music fades out for death/rescue cues, pauses with the game and resumes at the same musical position. Restart keeps the ongoing score while clearing effects.
+
+**Music** has its own saved level in Sound settings (35% by default); M still mutes everything. Both tracks load/decode asynchronously after audio is unlocked, with no gameplay delay. Missing music leaves ambience/effects available.
+
+[Listen to the sunset theme](docs/audio/sunset-theme.ogg) · [Composition, source and verification](docs/MUSIC.md). The standalone preview brings in the sanctuary layer during its second half. Browser listening and the final mix balance remain pending local review.

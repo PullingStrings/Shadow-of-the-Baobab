@@ -1,6 +1,6 @@
 # Sound design pass
 
-Original synthesized audio supports the painted sunset journey without a constant melody competing with play. No samples, paid services, remote requests or dependencies are added. This is a first sound-design pass for listening review; lion cues are stylized low synthesized growls, not recorded animal vocalizations.
+Original synthesized audio supports the painted sunset journey without a constant melody competing with play. No sampled instruments, paid services, external requests or dependencies are added. The original background score uses two local compressed stems; see [MUSIC.md](MUSIC.md). This is a first sound-design pass for listening review; lion cues are stylized low synthesized growls, not recorded animal vocalizations.
 
 ## Palette and cues
 
@@ -12,9 +12,9 @@ Original synthesized audio supports the painted sunset journey without a constan
 
 ## Controls and lifecycle
 
-M and the HUD note button toggle master mute. The keyboard-accessible Sound settings panel has Effects and Atmosphere sliders. `baobab-audio-v1` in localStorage preserves preferences; malformed or unavailable storage falls back gracefully. Slider arrow keys adjust volume without moving the hero.
+M and the HUD note button toggle master mute. The keyboard-accessible Sound settings panel has Effects, Atmosphere and Music sliders. `baobab-audio-v1` in localStorage preserves preferences; malformed or unavailable storage falls back gracefully. Slider arrow keys adjust volume without moving the hero.
 
-No AudioContext is created until Begin, resume or unmute is invoked by the player. A single context and two looping buffers are reused. Sound events are read after fixed simulation steps, keeping swing/hit/landing timing independent of rendering. Muted events are consumed without being queued for later. Volume changes ramp; a compressor controls overlapping effects. One-shot variants are cached and active effects are bounded to 24, with old voices faded out.
+No AudioContext is created until Begin, resume or unmute is invoked by the player. A single context, two ambience buffers and two synchronized music stems are reused. Sound events are read after fixed simulation steps, keeping swing/hit/landing timing independent of rendering. Muted events are consumed without being queued for later. Volume changes ramp; a compressor controls overlapping effects. One-shot variants are cached and active effects are bounded to 24, with old voices faded out.
 
 Pause/lost focus fades the master, stops transient effects and suspends the context after a short fade. Resume waits for a pending suspend, clears stale voices and unlocks playback. Restart clears effects and the event history, while keeping volume settings. Context/device failure is contained. Vite hot disposal releases audio. No movement, combat, enemy AI, collision or rescue logic changes.
 
@@ -28,7 +28,7 @@ Pause/lost focus fades the master, stops transient effects and suspends the cont
 
 ## Verification and review
 
-43 native Node source tests pass, including 15 new audio tests: finite/bounded/non-silent PCM and quiet endpoints, deterministic loop seams/variations, preferences, real held-attack and three-hit simulation sequences, material footsteps, jump/landing/damage, spatial warnings, no repeated terminal cues, lazy context creation, bus gains, pause/resume/restart, bounded voices, mute without backlog and missing device and runtime graph failure. These use native TypeScript stripping and a fake AudioContext for graph/lifecycle assertions; they are not browser playback tests. Existing game/hero/lion tests still pass.
+48 native Node source tests pass, including 15 new audio tests: finite/bounded/non-silent PCM and quiet endpoints, deterministic loop seams/variations, preferences, real held-attack and three-hit simulation sequences, material footsteps, jump/landing/damage, spatial warnings, no repeated terminal cues, lazy context creation, bus gains, pause/resume/restart, bounded voices, mute without backlog and missing device and runtime graph failure. Five additional music checks cover the composed PCM, synchronized layers, regional/ending fades, missing data and disposal during asynchronous loading. These use native TypeScript stripping and a fake AudioContext for graph/lifecycle assertions; they are not browser playback tests. Existing game/hero/lion tests still pass.
 
 A 24-second stereo reel in `docs/audio/sound-pass.ogg` stages 18 cues over the same generated ambience. PCM before encoding: peak 0.366, RMS 0.0254, no clipping. This reel illustrates the sound palette; it does not record live game timing, Web Audio compression or actual speaker/headphone output.
 

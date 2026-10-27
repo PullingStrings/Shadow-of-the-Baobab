@@ -10,7 +10,7 @@ export class SoundControls {
   constructor(audio: GameAudio) {
     this.audio = audio;
     this.mute.addEventListener('click', () => this.toggle());
-    for (const name of ['effects', 'ambience'] as const) {
+    for (const name of ['effects', 'ambience', 'music'] as const) {
       const input = document.querySelector<HTMLInputElement>(`#volume-${name}`)!;
       input.value = String(Math.round(audio.preferences[name] * 100));
       input.addEventListener('keydown', event => event.stopPropagation());
@@ -29,11 +29,11 @@ export class SoundControls {
     const data = this.audio.snapshot;
     this.mute.setAttribute('aria-label', data.muted ? 'Unmute sound (M)' : 'Mute sound (M)');
     this.mute.setAttribute('aria-pressed', String(data.muted)); this.mute.classList.toggle('muted', data.muted);
-    for (const name of ['effects', 'ambience'] as const) {
+    for (const name of ['effects', 'ambience', 'music'] as const) {
       const value = Math.round(data[name] * 100);
       document.querySelector<HTMLOutputElement>(`#value-${name}`)!.value = `${value}%`;
       document.querySelector<HTMLInputElement>(`#volume-${name}`)!.setAttribute('aria-valuetext', `${value}%`);
     }
-    this.status.textContent = data.status === 'unavailable' ? 'Sound unavailable. Your journey can continue.' : data.muted ? 'Sound muted.' : data.status === 'locked' ? 'Sound starts when you begin.' : data.status === 'paused' ? 'Sound paused with the game.' : 'Sound on.';
+    this.status.textContent = data.status === 'unavailable' ? 'Sound unavailable. Your journey can continue.' : data.muted ? 'Sound muted.' : data.status === 'locked' ? 'Sound starts when you begin.' : data.status === 'paused' ? 'Sound paused with the game.' : data.musicStatus === 'unavailable' ? 'Music unavailable. Effects and atmosphere remain on.' : 'Sound on.';
   }
 }

@@ -97,10 +97,11 @@ for (const key of ['KeyJ', 'KeyK', 'KeyX']) {
 
 test('sound unlocks on begin, pauses, mutes and persists independent volume settings', async ({ page }) => {
   await page.goto('/');
-  const audio = () => page.evaluate(() => (window as unknown as { __game: { audio: { contextState: string; muted: boolean; effects: number; ambience: number; voices: number } } }).__game.audio);
+  const audio = () => page.evaluate(() => (window as unknown as { __game: { audio: { contextState: string; muted: boolean; effects: number; ambience: number; music: number; voices: number } } }).__game.audio);
   expect((await audio()).contextState).toBe('locked');
   await page.getByRole('button', { name: 'Begin the journey' }).click();
   await page.waitForFunction(() => (window as unknown as { __game: { audio: { contextState: string } } }).__game.audio.contextState === 'running');
+  await page.waitForFunction(() => (window as unknown as { __game: { audio: { musicStatus: string; musicLayers: number } } }).__game.audio.musicStatus === 'ready' && (window as unknown as { __game: { audio: { musicLayers: number } } }).__game.audio.musicLayers === 2);
   await page.keyboard.down('KeyJ');
   await page.waitForFunction(() => (window as unknown as { __game: { audio: { voices: number } } }).__game.audio.voices > 0);
   await page.keyboard.up('KeyJ');
@@ -111,7 +112,8 @@ test('sound unlocks on begin, pauses, mutes and persists independent volume sett
   await page.getByText('Sound settings', { exact: true }).click();
   await page.locator('#volume-effects').focus(); await page.keyboard.press('Home'); await page.keyboard.press('ArrowRight');
   expect((await audio()).effects).toBe(0.01); expect((await audio()).ambience).toBe(0.3);
-  await page.reload(); expect((await audio()).muted).toBe(true); expect((await audio()).effects).toBe(0.01);
+  await page.locator('#volume-music').focus(); await page.keyboard.press('Home'); await page.keyboard.press('ArrowRight'); expect((await audio()).music).toBe(0.01);
+  await page.reload(); expect((await audio()).music).toBe(0.01); expect((await audio()).muted).toBe(true); expect((await audio()).effects).toBe(0.01);
   await page.getByRole('button', { name: 'Begin the journey' }).click();
   await page.getByRole('button', { name: 'Unmute sound (M)', exact: true }).click(); expect((await audio()).muted).toBe(false);
   const before = (await snapshot(page)).player.x;
@@ -124,4 +126,13 @@ test('an unavailable audio device does not stop the journey', async ({ page }) =
   await page.goto('/'); await page.keyboard.press('Enter');
   await page.waitForFunction(() => (window as unknown as { __game: { audio: { status: string } } }).__game.audio.status === 'unavailable');
   await reach(page, 5); expect((await snapshot(page)).phase).toBe('playing');
+});
+
+test('missing background music leaves effects and the journey available', async ({ page }) => {
+  await page.route('**/audio/music/**', route => route.abort());
+  await page.goto('/'); await page.keyboard.press('Enter');
+  await page.waitForFunction(() => (window as unknown as { __game: { audio: { musicStatus: string } } }).__game.audio.musicStatus === 'unavailable');
+  await page.keyboard.down('KeyJ');
+  await page.waitForFunction(() => (window as unknown as { __game: { audio: { voices: number } } }).__game.audio.voices > 0);
+  await page.keyboard.up('KeyJ'); await reach(page, 5); expect((await snapshot(page)).phase).toBe('playing');
 });

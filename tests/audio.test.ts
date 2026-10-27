@@ -24,8 +24,8 @@ test('ambient loops are deterministic, bounded and have continuous seam amplitud
   }
 });
 test('corrupt audio preferences are clamped and recover defaults', () => {
-  assert.deepEqual(audioPreferences(null), { muted: false, effects: 0.65, ambience: 0.3 });
-  assert.deepEqual(audioPreferences({ muted: 'yes', effects: 5, ambience: -2 }), { muted: false, effects: 1, ambience: 0 });
+  assert.deepEqual(audioPreferences(null), { muted: false, effects: 0.65, ambience: 0.3, music: 0.35 });
+  assert.deepEqual(audioPreferences({ muted: 'yes', effects: 5, ambience: -2 }), { muted: false, effects: 1, ambience: 0, music: 0.35 });
   assert.equal(audioPreferences({ effects: NaN }).effects, 0.65);
 });
 test('held attacks emit once per new swing; repeated reads do not duplicate audio', () => {

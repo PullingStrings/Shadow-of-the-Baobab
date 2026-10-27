@@ -1,12 +1,13 @@
 import type { GameState, Phase } from '../game/types.js';
 import { ambience, synthesize, type SoundName } from './synthesis.js';
+import { MusicPlayer, type MusicLoader } from './music-player.js';
 import { SoundEvents, type SoundEvent } from './events.js';
-export interface AudioPreferences { muted: boolean; effects: number; ambience: number }
-export const DEFAULT_AUDIO: AudioPreferences = { muted: false, effects: 0.65, ambience: 0.3 };
+export interface AudioPreferences { muted: boolean; effects: number; ambience: number; music: number }
+export const DEFAULT_AUDIO: AudioPreferences = { muted: false, effects: 0.65, ambience: 0.3, music: 0.35 };
 export function audioPreferences(value: unknown): AudioPreferences {
   const data = value && typeof value === 'object' ? value as Partial<AudioPreferences> : {};
   const level = (v: unknown, fallback: number) => typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : fallback;
-  return { muted: typeof data.muted === 'boolean' ? data.muted : false, effects: level(data.effects, 0.65), ambience: level(data.ambience, 0.3) };
+  return { muted: typeof data.muted === 'boolean' ? data.muted : false, effects: level(data.effects, 0.65), ambience: level(data.ambience, 0.3), music: level(data.music, 0.35) };
 }
 type Voice = { source: AudioBufferSourceNode; gain: GainNode; pan: StereoPannerNode };
 /** Browser adapter only. It reads simulation state and never changes gameplay. */
@@ -17,6 +18,9 @@ export class GameAudio {
   private master?: GainNode;
   private effects?: GainNode;
   private bed?: GainNode;
+  private musicBus?: GainNode;
+  private music?: MusicPlayer;
+  private musicLoader?: MusicLoader;
   private wind?: GainNode;
   private shrine?: GainNode;
   private loops: AudioBufferSourceNode[] = [];
@@ -32,12 +36,12 @@ export class GameAudio {
   private suspendTimer?: ReturnType<typeof setTimeout>;
   private status = 'locked';
   private factory: () => AudioContext;
-  constructor(preferences: unknown = DEFAULT_AUDIO, factory: () => AudioContext = () => new AudioContext()) {
-    this.factory = factory;
+  constructor(preferences: unknown = DEFAULT_AUDIO, factory: () => AudioContext = () => new AudioContext(), musicLoader?: MusicLoader) {
+    this.factory = factory; this.musicLoader = musicLoader;
     this.preferences = audioPreferences(preferences);
   }
   get snapshot() {
-    return { status: this.status, contextState: this.context?.state ?? 'locked', voices: this.voices.size, ...this.preferences };
+    return { status: this.status, contextState: this.context?.state ?? 'locked', voices: this.voices.size, musicStatus: this.music?.snapshot.status ?? 'locked', musicLayers: this.music?.snapshot.layers ?? 0, musicPosition: this.music?.snapshot.position ?? 0, ...this.preferences };
   }
   /** Call directly from a player gesture; no context is made on page load. */
   unlock(): Promise<void> {
@@ -59,6 +63,9 @@ export class GameAudio {
         this.master.connect(compressor); compressor.connect(context.destination);
         this.effects.connect(this.master); this.bed.connect(this.master);
         this.wind.connect(this.bed); this.shrine.connect(this.bed);
+        this.musicBus = context.createGain(); this.musicBus.gain.value = 0; this.musicBus.connect(this.master);
+        this.music = new MusicPlayer(context, this.musicBus, this.musicLoader);
+        this.music.onChange = () => this.onChange?.(); void this.music.load();
         for (const kind of ['wind', 'sanctuary'] as const) {
           const source = context.createBufferSource(); source.buffer = this.buffer(ambience(kind)); source.loop = true;
           source.connect(kind === 'wind' ? this.wind : this.shrine); source.start(); this.loops.push(source);
@@ -104,6 +111,7 @@ export class GameAudio {
   private mix() {
     this.gain(this.master, this.preferences.muted || this.phase === 'paused' ? 0 : 0.8);
     this.gain(this.effects, this.preferences.effects); this.gain(this.bed, this.preferences.ambience);
+    this.gain(this.musicBus, this.preferences.music); this.music?.setScene(this.phase, this.x);
     const active = this.phase === 'playing' ? 1 : this.phase === 'won' ? 0.5 : this.phase === 'dead' ? 0.12 : 0;
     const t = Math.max(0, Math.min(1, (this.x - 76) / 16));
     this.gain(this.wind, active * 0.8);
@@ -141,9 +149,9 @@ export class GameAudio {
     if (!delay) this.voices.clear();
   }
   dispose() {
-    clearTimeout(this.suspendTimer); this.stopVoices(); this.loops.forEach(source => { try { source.stop(); } catch { /* Already stopped. */ } }); this.loops = [];
+    clearTimeout(this.suspendTimer); this.music?.dispose(); this.music = undefined; this.stopVoices(); this.loops.forEach(source => { try { source.stop(); } catch { /* Already stopped. */ } }); this.loops = [];
     if (this.context) void this.context.close().catch(() => {});
-    this.context = undefined; this.master = this.effects = this.bed = this.wind = this.shrine = undefined;
+    this.context = undefined; this.musicBus = undefined; this.master = this.effects = this.bed = this.wind = this.shrine = undefined;
     this.buffers.clear(); this.targets = new WeakMap();
   }
 }

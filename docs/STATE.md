@@ -1,8 +1,8 @@
 # State — 27 October 2026
 
-- **Outcome:** Sound-design branch feat/sound-design from merged main 58af693. Original wind/insect ambience, sanctuary harmonic bed, footsteps, jump/landing, poke/slash, hit/hurt, positional lion cues, death/rescue. No merge/deployment.
-- **Changed:** New src/audio synthesis/events/engine/ui; main fixed-step event reading and gesture-bound lifecycle; HUD M mute and accessible Effects/Atmosphere sliders with browser persistence. Staged 24-second Ogg reel and notes. No audio downloads/dependencies.
-- **Preserved:** All src/game and input files, visual scene/art, movement, combat, collisions and rescue. Settings sliders stop their keyboard events from reaching game controls.
-- **Checks run:** 43 native source tests pass (15 new audio tests): PCM bounds/seams, simulation cue timing/materials/three hits, mock Web Audio lifecycle/gains/voice cap, mute/restart/pause and missing device and runtime graph failure. Reel PCM peak 0.366, RMS 0.0254; no clipping. HTML IDs unique; git diff --check passes.
-- **Limits:** Synthesized growls, not animal recordings. Fake AudioContext and signal checks are not listening tests. Docker unavailable: production/type build, Docker npm test, Playwright/browser playback and headphone/speaker mix review remain pending.
-- **Next:** Pull feat/sound-design; run README Docker checks; listen to the full route, controls, pause/alt-tab/restart and rescue/replay before merge.
+- **Outcome:** Added original background music to sound PR #4 on feat/sound-design; local feat/background-score starts from remote 1df0e0b. Original 80 BPM, 16-bar/48-second theme with plucked wooden tones, bass, pads and light percussion; synchronized sanctuary lift. No merge/deployment.
+- **Changed:** New music.ts authoring source, music-player.ts async local playback, two compressed stems, a full-theme preview, render tool, Music slider/persistence and additional checks. Score fades for endings and shares pause/context/mute controls. No runtime synthesis stall or new dependencies.
+- **Preserved:** Game/input/view/art, movement, combat, collision and rescue. Music failure does not disable ambience/effects. Restart keeps the musical position while clearing effects.
+- **Checks run:** 48 native source tests pass, including five new music tests and independent Music bus/preferences checks. Both encoded stems decode to 48-second stereo 24 kHz PCM, finite peaks below 0.6 and boundary differences below 0.02. Source peaks 0.459/0.242; preview peak 0.482. git diff --check passes.
+- **Limits:** Native signal/fake-node tests are not browser listening tests. Docker unavailable: production/type build, Docker npm test, Playwright decoding/playback and headphone/speaker mix review remain pending.
+- **Next:** Pull feat/sound-design; run README Docker checks, listen through two loops and full route/controls/endings before merging PR #4.

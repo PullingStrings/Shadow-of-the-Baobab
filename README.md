@@ -1,6 +1,6 @@
 # Shadow of the Baobab
 
-An original 2.5D action-platformer: cross the Whispering Grove, survive charging warthogs, leap the broken trail, and rescue the queen in the ruined sanctuary. Flat, layered character cutouts sit within a procedural low-poly 3D forest. The hero’s cape ripples and trails during movement; the spear thrusts horizontally toward the facing direction. Reference images guide the mood; no reference assets are included.
+An original 2.5D action-platformer: cross the Whispering Grove, survive charging warthogs, leap the broken trail, and rescue the queen in the ruined sanctuary. Flat, layered character cutouts sit within a 3D forest. The opening grove has a painted sunset backdrop, textured sandstone and earth, exposed roots, wind-swaying grass and drifting dust; later areas retain the procedural prototype art. The hero’s cape ripples and trails during movement; the spear thrusts horizontally toward the facing direction. Original generated background and sandstone textures are included locally; no external asset service is used at runtime.
 
 ## Play locally
 
@@ -62,6 +62,14 @@ Documentation checked **27 October 2026**. Installed versions: TypeScript 5.9.3,
 - **Godot:** a viable future choice for editor-driven scenes, animation and richer physics. Its web export targets WebAssembly/WebGL 2 using the Compatibility renderer, with single-threaded exports supported. For this TypeScript-first, programmatic-mesh slice, editor/export tooling offers less immediate benefit. See [Godot web export documentation](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html).
 
 Scope and acceptance criteria are recorded in [docs/PROJECT.md](docs/PROJECT.md). Starter workflows are available locally in `.agents/skills/`, with optional agent definitions in `.codex/agents/`. These are development instructions, not runtime dependencies. Existing Context7 and browser connections were used directly.
+
+## Opening grove art pass
+
+The first ground segment (world X −12 to 33) explores a painted cinematic direction with amber sunset light, lavender shadows and textured stone. `src/view/opening.ts` owns its backdrop, procedural earth texture, grass, roots, haze and dust. `src/view/world.ts` applies the sandstone/earth materials to the opening terrain and first ledges. `src/view/scene.ts` blends the opening light back to the original lighting as the camera moves from X 28 to 44. Background art follows more slowly than the gameplay camera for parallax; it does not replace the collidable world.
+
+The art assets are compressed WebP files in `public/art/opening/` (approximately 506 KiB combined). Asset origins and generation prompts are in [docs/ART.md](docs/ART.md). Grass uses four instanced draw batches. All vegetation and roots are decorative. The gold-edged platform convention, camera framing, actor animation, physics and combat rules are preserved. Character art is still the existing cutout prototype; this is an environment direction test, not the final concept reproduced in full.
+
+To review locally, start with `docker compose up --build`, begin the journey, walk through the first grove, jump onto the first gold-edged ledges, pause, and restart. Compare the opening at 1440×900 and 1920×1080, then cross the ravine to check the transition to the existing scenery. Run the checks above before merging. **This pass has not yet been visually verified in WebGL or checked by the Docker build/test suites in the authoring environment**; see STATE.md for the checks actually performed.
 
 ## Prototype boundaries
 

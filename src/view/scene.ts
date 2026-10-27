@@ -2,6 +2,7 @@ import * as T from 'three';
 import { warrior, warthog } from './meshes';
 import { buildWorld } from './world';
 import { FollowCamera } from './camera';
+import { buildOpening, openingWeight } from './opening';
 import type { GameState } from '../game/types';
 export class GameView {
   private renderer: T.WebGLRenderer;
@@ -11,6 +12,17 @@ export class GameView {
   private queen = warrior(true);
   private boars = [warthog(), warthog(), warthog()];
   private world;
+  private opening;
+  private ambient = new T.HemisphereLight('#c8e4d2', '#48513e', 2.8);
+  private rim = new T.DirectionalLight('#a8d8cd', 1.5);
+  private sunset = new T.Color('#ffc078');
+  private daylight = new T.Color('#ffcf90');
+  private sunsetSky = new T.Color('#d8a09d');
+  private daySky = new T.Color('#c8e4d2');
+  private sunsetGround = new T.Color('#42364b');
+  private dayGround = new T.Color('#48513e');
+  private duskFog = new T.Color('#947d90');
+  private dayFog = new T.Color('#80958a');
   private sun = new T.DirectionalLight('#ffcf90', 3.4);
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
@@ -21,13 +33,14 @@ export class GameView {
     this.renderer.toneMappingExposure = 1.15;
     this.scene.background = new T.Color('#80958a');
     this.scene.fog = new T.FogExp2('#80958a', 0.014);
-    this.scene.add(new T.HemisphereLight('#c8e4d2', '#48513e', 2.8));
+    this.scene.add(this.ambient);
     this.sun.position.set(8, 17, 7); this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(2048, 2048);
     Object.assign(this.sun.shadow.camera, { left: -22, right: 22, top: 17, bottom: -17, near: 1, far: 65 });
     this.sun.shadow.bias = -0.001; this.scene.add(this.sun, this.sun.target);
-    const rim = new T.DirectionalLight('#a8d8cd', 1.5); rim.position.set(-10, 5, -12); this.scene.add(rim);
+    this.rim.position.set(-10, 5, -12); this.scene.add(this.rim);
     this.world = buildWorld(this.scene);
+    this.opening = buildOpening(this.scene);
     this.scene.add(this.hero.root, this.queen.root, ...this.boars.map(b => b.root));
     this.queen.root.position.set(94, 3, 0.65);
     const resize = () => {
@@ -75,7 +88,19 @@ export class GameView {
     this.world.flames.forEach((f, i) => f.scale.y = 0.5 + Math.sin(time * 9 + i) * 0.09);
     this.world.particles.position.y = Math.sin(time * 0.35) * 0.2;
     this.follow.update(p.x, p.y, dt, state.phase === 'ready');
-    this.sun.position.x = this.follow.x + 5; this.sun.target.position.set(this.follow.x, 0, 0);
+    const sunset = openingWeight(this.follow.x);
+    this.sun.color.copy(this.daylight).lerp(this.sunset, sunset);
+    this.sun.intensity = T.MathUtils.lerp(3.4, 3.8, sunset);
+    this.ambient.color.copy(this.daySky).lerp(this.sunsetSky, sunset);
+    this.ambient.groundColor.copy(this.dayGround).lerp(this.sunsetGround, sunset);
+    this.ambient.intensity = T.MathUtils.lerp(2.8, 1.65, sunset);
+    const fog = this.scene.fog as T.FogExp2;
+    fog.color.copy(this.dayFog).lerp(this.duskFog, sunset);
+    fog.density = T.MathUtils.lerp(0.014, 0.008, sunset);
+    (this.scene.background as T.Color).copy(fog.color);
+    this.sun.position.set(this.follow.x + 5 + sunset * 8, 17 - sunset * 9, 7);
+    this.sun.target.position.set(this.follow.x, 0, 0);
+    this.opening.update(this.follow.x, (this.follow.camera.right - this.follow.camera.left) / 17, state.time);
     this.renderer.render(this.scene, this.follow.camera);
   }
 }

@@ -91,3 +91,7 @@ The user approved the hero’s painted design but reported idle popping and disl
 ## Spear slash atlas
 
 `public/art/hero/hero-slash.webp`: original generated RGBA atlas, 1536×1024, converted to WebP quality 92. Four complete right-facing poses; anatomy-scale fixed at 2.65/396 world units per pixel. Prompt: preserve the approved adult African-inspired hero, tied locs, orange scarf/cape, indigo trousers and sunset light; 2×2 transparent sheet of overhead anticipation, forceful diagonal spear sweep with thin warm arc, low follow-through and guard recovery. A targeted correction made the active pose use one continuous shaft with both connected hands gripping it. Generated from the approved hero-motion sheet. Source generator outputs remain outside the repository; runtime WebP and registration data are committed.
+
+## Sanctuary
+
+Three original generated images are served locally from `public/art/sanctuary/`: valley.webp (1881×836 RGB), shrine.webp (1374×1145 RGBA), queen.webp (1024×1536 RGBA). Combined size 1,107,712 bytes (~1.06 MiB); WebP quality 90, alpha retained. Shrine foundation strip is reused for the approach step. See [full prompts, registration and review notes](SANCTUARY.md). Generated with the built-in image tool; no external art service is used at runtime.

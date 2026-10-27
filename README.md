@@ -1,6 +1,6 @@
 # Shadow of the Baobab
 
-An original 2.5D action-platformer: cross the Whispering Grove, survive charging lions, leap the broken trail, and rescue the queen in the ruined sanctuary. The hero and lions use painted animation frames within a 3D forest; the queen retains her original cutout art. The opening grove has a sunset backdrop, textured terrain, climbable tree boughs, wind-swaying grass and drifting dust. Later areas retain the prototype scenery. All artwork is served locally.
+An original 2.5D action-platformer: cross the Whispering Grove, survive charging lions, leap the broken trail, and rescue the queen in the ruined sanctuary. The hero and lions use painted animation frames within a 3D forest; a complete painted queen waits in the sunset sanctuary. The opening grove has a sunset backdrop, textured terrain, climbable tree boughs, wind-swaying grass and drifting dust. The ancient trail retains prototype scenery; the final sanctuary now has a painted shrine and distant sunset valley. All artwork is served locally.
 
 ## Play locally
 
@@ -68,7 +68,7 @@ Scope and acceptance criteria are recorded in [docs/PROJECT.md](docs/PROJECT.md)
 
 The first ground segment (world X −12 to 33) explores a painted cinematic direction with amber sunset light, lavender shadows and textured stone. `src/view/opening.ts` owns its backdrop, procedural earth texture, grass, roots, haze and dust. `src/view/world.ts` applies the sandstone/earth materials to the opening terrain and first ledges. `src/view/scene.ts` blends the opening light back to the original lighting as the camera moves from X 28 to 44. Background art follows more slowly than the gameplay camera for parallax; it does not replace the collidable world.
 
-The original backdrop and stone WebP assets total approximately 506 KiB; the tree-ledge atlas adds approximately 516 KiB in `public/art/opening/`. Asset origins and generation prompts are in [docs/ART.md](docs/ART.md). Grass uses four instanced draw batches. All vegetation and roots are decorative. The grove’s three stone platforms are dressed as painted tree boughs at the same collision coordinates; later ledges retain their gold-edge convention. Camera framing and physics are preserved. The queen remains a procedural cutout; the enemy is now a painted lion. The hero pass described below adds painted frame-based character art; the opening remains an art-direction test rather than a full reproduction of the concept image.
+The original backdrop and stone WebP assets total approximately 506 KiB; the tree-ledge atlas adds approximately 516 KiB in `public/art/opening/`. Asset origins and generation prompts are in [docs/ART.md](docs/ART.md). Grass uses four instanced draw batches. All vegetation and roots are decorative. The grove’s three stone platforms are dressed as painted tree boughs at the same collision coordinates; later ledges retain their gold-edge convention. Camera framing and physics are preserved. The queen is now a complete painted figure; the enemy is now a painted lion. The hero pass described below adds painted frame-based character art; the opening remains an art-direction test rather than a full reproduction of the concept image.
 
 To review locally, start with `docker compose up --build`, begin the journey, walk through the first grove, jump onto the first highlighted branches, pause, and restart. Compare the opening at 1440×900 and 1920×1080, then cross the ravine to check the transition to the existing scenery. Run the checks above before merging. **This pass has not yet been visually verified in WebGL or checked by the Docker build/test suites in the authoring environment**; see STATE.md for the checks actually performed.
 
@@ -90,7 +90,7 @@ One short level, one enemy type, placeholder mesh animation, no sound, no save s
 
 The idle pose holds a single registered drawing. A slow four-second deformation above the waist supplies breathing; the boots and lower legs are pinned. It uses simulation time, so pause freezes it. This replaces swapping the four slightly different idle images, which caused stance popping. Run/jump/attack art is unchanged.
 
-The grove’s first three platforms (X 14, 21 and 31) use painted trees and broad boughs with a fine warm landing-edge highlight. No stone pillars or beige slabs are drawn there. Their position, width and jump/collision rules are unchanged. Later areas retain their existing stone scenery.
+The grove’s first three platforms (X 14, 21 and 31) use painted trees and broad boughs with a fine warm landing-edge highlight. No stone pillars or beige slabs are drawn there. Their position, width and jump/collision rules are unchanged. The ancient trail retains its existing stone scenery; the sanctuary has its own rooted sandstone shrine.
 
 Painted lions replace the procedural boars. An eight-pose atlas supplies stalking, windup crouch, extended/gathered gallop and recovery, using the existing patrol/charge timing, speed and damage, with three-hit health. Alpha-contour meshes isolate each silhouette where generated sheet bounds overlap. Lion-shaped and wooden-bough loading/error fallbacks keep hazards and landing edges visible.
 
@@ -101,3 +101,11 @@ See [grove polish notes and generation prompts](docs/GROVE_POLISH.md), [tree/lio
 J pokes (0.3 s action, 0.4 s repeat); K or X slashes (0.42 s action, 0.55 s repeat). Both deal one damage per lion per swing. Poke reaches farther; slash covers a broader vertical band. A successful hit interrupts the lion into recovery. Body overlap replaces the centre-only melee check, so its visible front can be struck before it charges. A brief flash and three health pips show successful damage.
 
 [Combat details and verification](docs/COMBAT.md) · [Eight runtime attack poses, software preview](docs/previews/poke-slash.webp). Docker build and browser checks remain pending.
+
+## Painted sanctuary
+
+The final area (world X 80–105) now continues the cinematic sunset direction: a distant canyon/baobab valley, rooted sandstone arch with bronze sun carvings, a painted ivory-and-gold queen facing the hero, and warm textured approach/dais stonework. A thin sunlit trace marks both real landing edges. Lighting and the background blend in as the camera approaches; the opening and middle trail remain separate.
+
+The queen holds one connected pose with slow breathing above the waist. Dust, torch flicker and the prison ring now use simulation time and freeze on pause. The ring still disappears on rescue. Platform positions, jump/landing rules, combat, rescue height and victory trigger are unchanged. No new interaction is required.
+
+[Sanctuary notes, asset prompts and verification](docs/SANCTUARY.md) · [Arrival preview](docs/previews/sanctuary-arrival.webp) · [Rescue framing preview](docs/previews/sanctuary-rescue.webp). These are camera-projected software assembly renders, not WebGL gameplay captures. The three new local WebP assets total approximately 1.06 MiB. Docker build/type checks and browser journeys remain pending in the authoring environment; run the checks above before merging.

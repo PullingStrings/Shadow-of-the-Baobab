@@ -22,7 +22,7 @@ test('keyboard movement, vertical traversal, pause, combat, death and restart', 
   await page.keyboard.press('Escape'); const paused = await snapshot(page);
   await page.waitForTimeout(250); expect((await snapshot(page)).time).toBe(paused.time);
   await page.keyboard.press('Escape');
-  // Start a clean run, then meet the first boar with the spear ready.
+  // Start a clean run, then meet the first lion with the spear ready.
   await page.keyboard.press('KeyR'); await page.keyboard.down('KeyJ');
   await reach(page, 18.5);
   await page.waitForFunction(() => (window as unknown as { __game: Snapshot }).__game.kills >= 1, undefined, { timeout: 15000 });
@@ -74,3 +74,18 @@ test('a charging enemy damages the player and the HUD; buttons resume and restar
   await page.keyboard.press('KeyR');
   expect((await snapshot(page)).player.hp).toBe(4);
 });
+
+for (const key of ['KeyJ', 'KeyK', 'KeyX']) {
+  test(`${key} selects its attack and can defeat the first lion`, async ({ page }) => {
+    await page.goto('/'); await page.keyboard.press('Enter');
+    await page.keyboard.down(key); await reach(page, 18.5);
+    await page.waitForFunction(kind => {
+      const p = (window as unknown as { __game: Snapshot }).__game.player;
+      return p.attack > 0 && p.attackKind === kind;
+    }, key === 'KeyJ' ? 'poke' : 'slash');
+    await page.waitForFunction(() => (window as unknown as { __game: Snapshot }).__game.kills >= 1, undefined, { timeout: 15000 });
+    await page.keyboard.up(key);
+    const state = await snapshot(page);
+    expect(state.enemies[0].hp).toBe(0); expect(state.player.hp).toBeGreaterThan(0);
+  });
+}

@@ -2,6 +2,7 @@ import * as T from 'three';
 import { box, rock, branch } from './meshes';
 import { ground, platforms } from '../game/world';
 import { openingTextures } from './opening';
+import { buildGroveLedges } from './grove-trees';
 // Seeded decoration keeps screenshots, silhouettes and tests reproducible.
 let seed = 71;
 function random() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
@@ -25,7 +26,9 @@ export function buildWorld(scene: T.Scene) {
       rock(nature, '#95876a', [0.3 + random() * 0.5, 0.12, 0.25], [x, 0, random() - 0.5]);
     }
   }
+  buildGroveLedges(scene, platforms.filter(p => p.x < 33));
   for (const p of platforms) {
+    if (p.x < 33) continue;
     const slab = box(scene, '#8d947b', [p.width, 0.5, p.depth], [p.x, p.y - 0.25, 0]);
     if (p.x < 33) slab.material = painted.slab;
     box(scene, '#b7a36d', [p.width, 0.12, p.depth], [p.x, p.y - 0.06, 0]);

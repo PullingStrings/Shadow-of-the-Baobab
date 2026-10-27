@@ -1,7 +1,8 @@
 import type { Enemy, Player } from './types.js';
 import { enemyHomes, ground } from './world.js';
+import { ENEMY_MAX_HP } from './attacks.js';
 export function createEnemies(): Enemy[] {
-  return enemyHomes.map(x => ({ x, y: 0, home: x, hp: 2, facing: -1, mode: 'patrol', timer: 0, hitBy: -1 }));
+  return enemyHomes.map(x => ({ x, y: 0, home: x, hp: ENEMY_MAX_HP, facing: -1, mode: 'patrol', timer: 0, hitBy: -1 }));
 }
 export function updateEnemy(e: Enemy, p: Player, dt: number) {
   if (e.hp <= 0) { e.mode = 'dead'; return; }

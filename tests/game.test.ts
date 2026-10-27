@@ -30,14 +30,17 @@ test('one-way platforms accept descending feet; ravine has no invisible floor', 
   for (let i = 0; i < 120; i++) integrate(p, tick);
   assert.ok(p.y < -8);
 });
-test('melee is directional, hits once per swing and can defeat a warthog', () => {
+test('melee is directional, hits once per swing and defeats a lion on the third hit', () => {
   const p = createPlayer(), e = createEnemies()[0];
   e.x = p.x - 2; p.attack = 0.2; p.attackId = 1;
+  resolveCombat(p, [e]); assert.equal(e.hp, 3);
+  e.x = p.x + 2; resolveCombat(p, [e]); assert.equal(e.hp, 2);
   resolveCombat(p, [e]); assert.equal(e.hp, 2);
-  e.x = p.x + 2; resolveCombat(p, [e]); assert.equal(e.hp, 1);
-  resolveCombat(p, [e]); assert.equal(e.hp, 1);
+  p.attackId++; e.x = p.x + 2;
+  assert.equal(resolveCombat(p, [e]), 0); assert.equal(e.hp, 1);
   p.attackId++; e.x = p.x + 2;
   assert.equal(resolveCombat(p, [e]), 1); assert.equal(e.hp, 0);
+  assert.equal(resolveCombat(p, [e]), 0);
 });
 test('enemy telegraphs, charges, recovers; damage has invulnerability', () => {
   const p = createPlayer(), e = createEnemies()[0]; p.x = e.x - 5;

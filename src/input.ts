@@ -16,7 +16,8 @@ export class Controls {
     const input = {
       axis: Number(this.held.has('KeyD') || this.held.has('ArrowRight')) - Number(this.held.has('KeyA') || this.held.has('ArrowLeft')),
       jump: ['Space', 'KeyW', 'ArrowUp'].some(k => this.pressed.has(k)),
-      attack: this.held.has('KeyJ') || this.held.has('KeyX'),
+      attack: this.held.has('KeyJ'),
+      slash: this.held.has('KeyK') || this.held.has('KeyX'),
     };
     this.pressed.clear(); return input;
   }

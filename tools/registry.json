@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "note": "Discovery candidates only. No availability, account access or authentication implied.",
+  "tools": [
+    {
+      "category": "Documentation",
+      "name": "Context7",
+      "type": "MCP or plugin",
+      "official_url": "https://context7.com",
+      "purpose": "Current version-sensitive third-party docs",
+      "activation": "on-demand",
+      "permission_class": "readonly",
+      "installed": null
+    },
+    {
+      "category": "Documentation",
+      "name": "OpenAI Developer Docs",
+      "type": "MCP",
+      "official_url": "https://developers.openai.com/learn/docs-mcp",
+      "purpose": "Official OpenAI platform documentation",
+      "activation": "on-demand",
+      "permission_class": "readonly",
+      "installed": null
+    },
+    {
+      "category": "Browser",
+      "name": "Playwright CLI",
+      "type": "CLI",
+      "official_url": "https://github.com/microsoft/playwright-cli",
+      "purpose": "Token-efficient browser interaction and verification",
+      "activation": "recommended-for-web",
+      "permission_class": "local-execution",
+      "installed": null
+    },
+    {
+      "category": "Source control",
+      "name": "GitHub CLI",
+      "type": "CLI",
+      "official_url": "https://cli.github.com/",
+      "purpose": "Repository, issues, PR operations",
+      "activation": "recommended-for-git",
+      "permission_class": "remote-write",
+      "installed": null
+    },
+    {
+      "category": "Source control",
+      "name": "GitHub MCP",
+      "type": "MCP",
+      "official_url": "https://github.com/github/github-mcp-server",
+      "purpose": "GitHub workflows when connected",
+      "activation": "on-demand",
+      "permission_class": "remote-write",
+      "installed": null
+    },
+    {
+      "category": "Design",
+      "name": "Figma MCP",
+      "type": "MCP",
+      "official_url": "https://developers.figma.com/docs/figma-mcp-server/",
+      "purpose": "Inspect implementation design context",
+      "activation": "on-demand",
+      "permission_class": "private-data",
+      "installed": null
+    },
+    {
+      "category": "Database",
+      "name": "Supabase MCP",
+      "type": "MCP",
+      "official_url": "https://supabase.com/docs/guides/getting-started/mcp",
+      "purpose": "Backend and database project tools",
+      "activation": "on-demand",
+      "permission_class": "remote-write",
+      "installed": null
+    },
+    {
+      "category": "Deployment",
+      "name": "Vercel",
+      "type": "CLI or MCP",
+      "official_url": "https://vercel.com/docs",
+      "purpose": "Deploy and inspect hosted apps",
+      "activation": "on-demand",
+      "permission_class": "remote-write",
+      "installed": null
+    },
+    {
+      "category": "Monitoring",
+      "name": "Sentry MCP",
+      "type": "MCP",
+      "official_url": "https://docs.sentry.io/",
+      "purpose": "Production error context",
+      "activation": "on-demand",
+      "permission_class": "private-data",
+      "installed": null
+    },
+    {
+      "category": "API",
+      "name": "Postman",
+      "type": "CLI or MCP",
+      "official_url": "https://learning.postman.com/",
+      "purpose": "API tests and collections",
+      "activation": "on-demand",
+      "permission_class": "remote-write",
+      "installed": null
+    },
+    {
+      "category": "Quality",
+      "name": "Lighthouse",
+      "type": "CLI",
+      "official_url": "https://developer.chrome.com/docs/lighthouse/",
+      "purpose": "Performance and page-quality audits",
+      "activation": "on-demand",
+      "permission_class": "local-execution",
+      "installed": null
+    },
+    {
+      "category": "Quality",
+      "name": "axe-core",
+      "type": "package",
+      "official_url": "https://github.com/dequelabs/axe-core",
+      "purpose": "Accessibility rules and checks",
+      "activation": "on-demand",
+      "permission_class": "local-execution",
+      "installed": null
+    },
+    {
+      "category": "Components",
+      "name": "Storybook",
+      "type": "package",
+      "official_url": "https://storybook.js.org/docs",
+      "purpose": "Isolated component development and tests",
+      "activation": "on-demand",
+      "permission_class": "local-execution",
+      "installed": null
+    },
+    {
+      "category": "Diagrams",
+      "name": "Mermaid",
+      "type": "text/CLI",
+      "official_url": "https://mermaid.js.org/",
+      "purpose": "Architecture diagrams as text",
+      "activation": "on-demand",
+      "permission_class": "readonly",
+      "installed": null
+    },
+    {
+      "category": "Diagrams",
+      "name": "Excalidraw",
+      "type": "app",
+      "official_url": "https://excalidraw.com/",
+      "purpose": "Collaborative visual whiteboarding",
+      "activation": "on-demand",
+      "permission_class": "external-service",
+      "installed": null
+    },
+    {
+      "category": "Framework",
+      "name": "Next.js DevTools MCP",
+      "type": "MCP",
+      "official_url": "https://nextjs.org/docs",
+      "purpose": "Next.js-specific tooling when applicable",
+      "activation": "on-demand",
+      "permission_class": "local-execution",
+      "installed": null
+    }
+  ]
+}

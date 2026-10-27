@@ -1,0 +1,10 @@
+# Project brief — Shadow of the Baobab
+
+- **Outcome:** Put a playable keyboard-controlled, original African-inspired fantasy arcade adventure in the user's hands for movement/combat feedback.
+- **Target audience:** Desktop players and a senior TypeScript developer new to game development.
+- **First vertical slice:** Title → forest traversal and elevated ruins → charging warthogs and ravine → raised sanctuary → queen rescue/victory. Damage can lead to death; Enter/R starts a fresh attempt.
+- **Acceptance criteria:** Docker Compose builds/starts the game on localhost with source reload; left/right acceleration and a high jump work; animated directional melee defeats an enemy that can damage the player; health, death, respawn and restart work; a following camera presents genuine 3D depth; the level has a beginning, elevated traversal and rescue ending; HUD progress and win state work; type/build, simulation tests and actual keyboard browser journeys pass; README and STATE accurately document the result.
+- **Constraints:** Docker-only package/build/test execution; TypeScript preference; minimal dependencies; desktop keyboard and WebGL 2; original procedural placeholders; no paid assets/accounts, backend, authentication, database or public deployment.
+- **Chosen architecture:** Vite + TypeScript + Three.js; plain fixed-step X/Y simulation separated from 3D presentation, with modules for controls, player, physics, enemies, combat, camera, world and state. Phaser's 2D focus and Godot's editor/export workflow were briefly assessed against official documentation; rationale and sources are in README.md.
+- **Non-goals:** Final art, culturally specific depictions, mobile/gamepad, sound, checkpoints/saves, a ranged guardian, multiple levels or commercial readiness.
+- **Verification:** Docker build/start; `docker compose exec game npm run build`; `docker compose exec game npm test`; `docker compose run --rm browser-tests`. Actual Chromium keyboard/button journeys cover traversal, platform landing, camera follow, combat, enemy damage/HUD, pause, ravine death, respawn and full rescue/replay. Results and limits are recorded in STATE.md.

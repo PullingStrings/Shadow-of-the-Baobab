@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {"noEmit": false, "allowImportingTsExtensions": false, "outDir": ".test-build", "module": "NodeNext", "moduleResolution": "NodeNext"},
+  "include": ["src/game", "tests/*.test.ts"]
+}

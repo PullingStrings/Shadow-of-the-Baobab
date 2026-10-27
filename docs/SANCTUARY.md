@@ -1,6 +1,6 @@
 # Painted sanctuary
 
-The final stretch, X 80–105, gets a painted warm-sunset destination. A transparent rooted sandstone arch frames a complete painted queen; a distant canyon, waterfalls and baobab valley move with slower camera parallax. Bronze sun details echo the queen's crown. The culture and motifs are fictional.
+The final stretch, X 80–105, gets a painted warm-sunset destination. The PR now also includes the crossing and Ancient Trail; see [TRAIL.md](TRAIL.md). A transparent rooted sandstone arch frames a complete painted queen; a distant canyon, waterfalls and baobab valley move with slower camera parallax. Bronze sun details echo the queen's crown. The culture and motifs are fictional.
 
 ## Integration
 

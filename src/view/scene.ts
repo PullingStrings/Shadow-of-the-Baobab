@@ -1,11 +1,10 @@
 import * as T from 'three';
 import { PaintedQueen } from './queen';
-import { sanctuaryWeight } from './sanctuary-layout';
 import { PaintedLion } from './lion';
 import { PaintedHero } from './hero';
 import { buildWorld } from './world';
 import { FollowCamera } from './camera';
-import { buildOpening, openingWeight } from './opening';
+import { buildOpening } from './opening';
 import type { GameState } from '../game/types';
 export class GameView {
   private renderer: T.WebGLRenderer;
@@ -62,7 +61,8 @@ export class GameView {
     this.world.flames.forEach((f, i) => f.scale.y = 0.5 + Math.sin(time * 9 + i) * 0.09);
     this.world.particles.position.y = Math.sin(time * 0.35) * 0.2;
     this.follow.update(p.x, p.y, dt, state.phase === 'ready');
-    const sunset = Math.max(openingWeight(this.follow.x), sanctuaryWeight(this.follow.x));
+    // Keep one warm lighting treatment along the whole painted route.
+    const sunset = 1;
     this.sun.color.copy(this.daylight).lerp(this.sunset, sunset);
     this.sun.intensity = T.MathUtils.lerp(3.4, 3.8, sunset);
     this.ambient.color.copy(this.daySky).lerp(this.sunsetSky, sunset);
@@ -75,6 +75,7 @@ export class GameView {
     this.sun.position.set(this.follow.x + 5 + sunset * 8, 17 - sunset * 9, 7);
     this.sun.target.position.set(this.follow.x, 0, 0);
     this.opening.update(this.follow.x, (this.follow.camera.right - this.follow.camera.left) / 17, state.time);
+    this.world.trail.update(this.follow.x, (this.follow.camera.right - this.follow.camera.left) / 17, state.time);
     this.world.sanctuary.update(this.follow.x, (this.follow.camera.right - this.follow.camera.left) / 17, state.time);
     this.renderer.render(this.scene, this.follow.camera);
   }

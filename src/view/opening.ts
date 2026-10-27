@@ -111,7 +111,8 @@ export function buildOpening(scene: T.Scene) {
       dressing.visible = weight > 0;
       // Orthographic cameras need explicit differential motion for painted layers.
       backdrop.position.x = 4 + (cameraX - 7) * 0.84;
-      const width = Math.max(43, aspect * 17 * 1.25);
+      // Include the parallax offset so the plate covers wide views while fading.
+      const width = Math.max(43, aspect * 17 * 1.25, aspect * 17 + 2 * Math.abs(cameraX - backdrop.position.x) + 2);
       backdrop.scale.set(width, width / (1672 / 941), 1);
       backdropMaterial.opacity = weight;
       haze.material.opacity = 0.24 * weight;

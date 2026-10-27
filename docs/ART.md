@@ -95,3 +95,7 @@ The user approved the hero’s painted design but reported idle popping and disl
 ## Sanctuary
 
 Three original generated images are served locally from `public/art/sanctuary/`: valley.webp (1881×836 RGB), shrine.webp (1374×1145 RGBA), queen.webp (1024×1536 RGBA). Combined size 1,107,712 bytes (~1.06 MiB); WebP quality 90, alpha retained. Shrine foundation strip is reused for the approach step. See [full prompts, registration and review notes](SANCTUARY.md). Generated with the built-in image tool; no external art service is used at runtime.
+
+## Ancient Trail extension
+
+`public/art/trail/sunset-trail.webp` is an original built-in generated background, converted to RGB WebP quality 90. A targeted edit removes the sun disc to keep transitions from showing two suns. The approved tree atlas is reused for all six pre-sanctuary ledges, with a mirrored far-bank root at X 37. Full prompt, correction and implementation details are in [TRAIL.md](TRAIL.md).

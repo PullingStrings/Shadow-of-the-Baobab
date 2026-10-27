@@ -3,22 +3,29 @@ import { createGame, stepGame } from './game/state';
 import { END } from './game/world';
 import { Controls } from './input';
 import { GameView } from './view/scene';
+import { GameAudio } from './audio/engine';
+import { SoundControls, loadAudioPreferences } from './audio/ui';
 import type { Phase } from './game/types';
 const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
+const audio = new GameAudio(loadAudioPreferences());
+const soundControls = new SoundControls(audio);
 let state = createGame();
 let view: GameView;
 const overlay = $('#overlay'), title = $('h1'), message = $('#message'), start = $('#start');
 const originalTitle = title.innerHTML;
 let lastPhase: Phase | undefined;
-function startGame() { state = createGame('playing', state.deaths); controls.clear(); }
+function startGame() { state = createGame('playing', state.deaths); controls.clear(); audio.begin(state); }
 function togglePause() {
   if (state.phase === 'playing') { state.phase = 'paused'; controls.clear(); }
   else if (state.phase === 'paused') { state.phase = 'playing'; controls.clear(); }
+  audio.setPhase(state.phase);
+  if (state.phase === 'playing') void audio.unlock();
 }
 const controls = new Controls(key => {
   if (key === 'Enter') { if (state.phase === 'paused') togglePause(); else if (state.phase !== 'playing') startGame(); }
   if (key === 'Escape') togglePause();
   if (key === 'KeyR') startGame();
+  if (key === 'KeyM') soundControls.toggle();
 });
 start.addEventListener('click', () => state.phase === 'paused' ? togglePause() : startGame());
 $('#pause').addEventListener('click', togglePause);
@@ -52,7 +59,7 @@ try {
   let previous = performance.now(), accumulator = 0, uiElapsed = 0;
   const frame = (now: number) => {
     const dt = Math.min((now - previous) / 1000, 0.1); previous = now; accumulator += dt;
-    while (accumulator >= 1 / 120) { stepGame(state, controls.read(), 1 / 120); accumulator -= 1 / 120; }
+    while (accumulator >= 1 / 120) { stepGame(state, controls.read(), 1 / 120); audio.update(state); accumulator -= 1 / 120; }
     view.render(state, dt, now / 1000);
     uiElapsed += dt;
     if (uiElapsed > 0.08 || lastPhase !== state.phase) { updateUI(); uiElapsed = 0; }
@@ -60,9 +67,11 @@ try {
   };
   requestAnimationFrame(frame);
   // Read-only snapshots expose observability, never gameplay shortcuts.
-  if (import.meta.env.DEV) Object.defineProperty(window, '__game', { get: () => structuredClone({ ...state, cameraX: view.follow.x }) });
+  if (import.meta.env.DEV) Object.defineProperty(window, '__game', { get: () => structuredClone({ ...state, cameraX: view.follow.x, audio: audio.snapshot }) });
 } catch (error) {
   title.textContent = 'A little more light.';
   message.textContent = 'The 3D renderer could not start. Enable WebGL 2 and hardware acceleration, then reload.';
   start.style.display = 'none'; console.error(error);
 }
+
+if (import.meta.hot) import.meta.hot.dispose(() => audio.dispose());

@@ -18,6 +18,7 @@ Open **http://localhost:5173** in a desktop browser with WebGL 2 and hardware ac
 | Space, W or up arrow | Jump |
 | J (hold to repeat) | Long, fast spear poke |
 | K or X (hold to repeat) | Shorter, broader spear slash |
+| M | Mute / unmute sound |
 | Escape | Pause / resume |
 | Enter | Begin, resume, respawn or replay |
 | R | Restart the level |
@@ -84,7 +85,7 @@ Eight hero regression tests cover frame bounds/scales, attack timing, distance-b
 
 ## Prototype boundaries
 
-One short level, one enemy type, placeholder mesh animation, no sound, no save system, no mobile/controller support and no ranged guardian. The kingdom, clothing and motifs are fictional; they do not depict a specific African culture. Future art development should involve specific cultural research and collaboration. Safari/Firefox and a hardware performance budget remain future checks. See [docs/STATE.md](docs/STATE.md) for verification results.
+One short level, one enemy type, original synthesized sound, no save system, no mobile/controller support and no ranged guardian. The kingdom, clothing and motifs are fictional; they do not depict a specific African culture. Future art development should involve specific cultural research and collaboration. Safari/Firefox and a hardware performance budget remain future checks. See [docs/STATE.md](docs/STATE.md) for verification results.
 
 ## Idle, tree ledges and lions
 
@@ -115,3 +116,11 @@ The queen holds one connected pose with slow breathing above the waist. Dust, to
 The crossing and Ancient Trail now continue the grove’s painted treatment, with warm textured earth, tree-bough platforms, exposed roots, soft grass/dust and a new atmospheric valley. The crossing bough grows left from the far bank; the ravine remains visibly open. The remaining prototype pillars, flat ruin arch, polygon trees and green terrain have been removed. Movement, landing widths/heights, combat and rescue rules are preserved.
 
 The three backgrounds blend over an opaque middle plate, with continuous sunset lighting and a warm overlay. The middle sky has no distinct sun disc to avoid double suns during transitions. See [trail notes and generation prompt](docs/TRAIL.md), [middle preview](docs/previews/ancient-trail.webp) and [crossing preview](docs/previews/broken-crossing.webp). These are software assembly renders, not gameplay captures. Docker build/type and browser checks remain pending.
+
+## Sound design
+
+Begin the journey to enable audio. The mix adds a quiet looping wind/insect bed, a warm sanctuary drone, earth/wood/stone footsteps, jump/landing, distinct poke/slash whooshes, hit/hurt cues, positional lion warning/charge/defeat cues, death and a short rescue chord. This is original synthesized sound, with no external samples, downloads or runtime dependencies. The lion cues are stylized synthesized growls, not wildlife recordings.
+
+**M** or the note button mutes everything. Open **Sound settings** below the game for separate **Effects** and **Atmosphere** levels. Preferences persist on this browser when storage is available. Audio starts after a player gesture, fades/suspends on pause or losing focus, and resumes with the journey. Restart clears old effects; unsupported audio leaves gameplay available.
+
+[Listen to the 24-second sound reel](docs/audio/sound-pass.ogg) · [Sound architecture, cue list and verification](docs/SOUND.md). The reel uses the same original PCM generators in a staged sequence, not a gameplay recording. Browser playback and listening balance still need local review.

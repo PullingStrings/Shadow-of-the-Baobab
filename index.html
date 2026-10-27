@@ -13,14 +13,24 @@
       <section class="stage" aria-label="Shadow of the Baobab game">
         <canvas id="game" aria-label="Side-scrolling 3D forest adventure. Controls are listed below."></canvas>
         <div class="vignette"></div>
-        <div class="hud"><div class="vital"><span class="eyebrow">THE WANDERER</span><div id="health" aria-label="Health"></div></div><div class="chapter"><span class="eyebrow">CHAPTER I</span><span>The Queen’s Trail</span></div><button id="pause" class="quiet-button" aria-label="Pause game">Ⅱ <span>ESC</span></button></div>
+        <div class="hud"><div class="vital"><span class="eyebrow">THE WANDERER</span><div id="health" aria-label="Health"></div></div><div class="chapter"><span class="eyebrow">CHAPTER I</span><span>The Queen’s Trail</span></div><div class="hud-actions"><button id="mute" class="quiet-button" aria-label="Mute sound (M)" aria-pressed="false"><i aria-hidden="true">♪</i><span>M</span></button><button id="pause" class="quiet-button" aria-label="Pause game">Ⅱ <span>ESC</span></button></div></div>
         <div class="location"><span class="location-dot"></span><span id="location">THE WHISPERING GROVE</span></div>
         <div id="overlay" class="overlay"><div class="intro-line"><span></span> A KINGDOM IN SHADOW</div><h1>Shadow of<br>the <em>Baobab.</em></h1><p id="message">Beyond the ancient grove, a queen awaits.<br>Take up your spear. Follow the light.</p><button id="start" class="primary-button">Begin the journey <span>↗</span></button><span id="overlay-hint" class="overlay-hint">PRESS ENTER TO BEGIN</span></div>
         <div id="toast" class="toast" role="status" aria-live="polite"></div>
         <div class="trail"><div class="trail-caption"><span>THE GROVE</span><span id="progress-label">SANCTUARY · 90 M</span><span>♛</span></div><div class="trail-line"><div id="progress"></div></div></div>
         <div class="scene-caption">01 <span> / </span> THE WHISPERING GROVE</div>
       </section>
-      <footer class="controls"><div class="control-heading"><span class="eyebrow">YOUR JOURNEY STARTS HERE</span><span>Leave only a legend.</span></div><div class="key-guide"><div><kbd>A</kbd><kbd>D</kbd><span>Move</span></div><div><kbd>SPACE</kbd><span>Jump</span></div><div><kbd>J</kbd><span>Poke</span></div><div><kbd>K</kbd><kbd>X</kbd><span>Slash</span></div><div><kbd>R</kbd><span>Restart</span></div><div><kbd>ESC</kbd><span>Pause</span></div></div><span class="footer-note">DESKTOP · KEYBOARD<br><span>Original worlds. Arcade soul.</span></span></footer>
+      <footer class="controls"><div class="control-heading"><span class="eyebrow">YOUR JOURNEY STARTS HERE</span><span>Leave only a legend.</span></div><div class="key-guide"><div><kbd>A</kbd><kbd>D</kbd><span>Move</span></div><div><kbd>SPACE</kbd><span>Jump</span></div><div><kbd>J</kbd><span>Poke</span></div><div><kbd>K</kbd><kbd>X</kbd><span>Slash</span></div><div><kbd>M</kbd><span>Sound</span></div><div><kbd>R</kbd><span>Restart</span></div><div><kbd>ESC</kbd><span>Pause</span></div></div><span class="footer-note">DESKTOP · KEYBOARD<br><span>Original worlds. Arcade soul.</span></span></footer>
+      <details class="sound-settings">
+        <summary>Sound settings</summary>
+        <div class="sound-levels">
+          <label for="volume-effects">Effects <output id="value-effects" for="volume-effects">65%</output></label>
+          <input id="volume-effects" type="range" min="0" max="100" step="1" value="65" />
+          <label for="volume-ambience">Atmosphere <output id="value-ambience" for="volume-ambience">30%</output></label>
+          <input id="volume-ambience" type="range" min="0" max="100" step="1" value="30" />
+          <p id="audio-status" role="status">Sound starts when you begin.</p>
+        </div>
+      </details>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>

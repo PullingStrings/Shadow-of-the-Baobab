@@ -94,3 +94,34 @@ for (const key of ['KeyJ', 'KeyK', 'KeyX']) {
     expect(state.enemies[0].hp).toBe(0); expect(state.player.hp).toBeGreaterThan(0);
   });
 }
+
+test('sound unlocks on begin, pauses, mutes and persists independent volume settings', async ({ page }) => {
+  await page.goto('/');
+  const audio = () => page.evaluate(() => (window as unknown as { __game: { audio: { contextState: string; muted: boolean; effects: number; ambience: number; voices: number } } }).__game.audio);
+  expect((await audio()).contextState).toBe('locked');
+  await page.getByRole('button', { name: 'Begin the journey' }).click();
+  await page.waitForFunction(() => (window as unknown as { __game: { audio: { contextState: string } } }).__game.audio.contextState === 'running');
+  await page.keyboard.down('KeyJ');
+  await page.waitForFunction(() => (window as unknown as { __game: { audio: { voices: number } } }).__game.audio.voices > 0);
+  await page.keyboard.up('KeyJ');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => (window as unknown as { __game: { audio: { contextState: string } } }).__game.audio.contextState === 'suspended');
+  await page.keyboard.press('KeyM'); expect((await audio()).muted).toBe(true);
+  await expect(page.getByRole('button', { name: 'Unmute sound (M)', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByText('Sound settings', { exact: true }).click();
+  await page.locator('#volume-effects').focus(); await page.keyboard.press('Home'); await page.keyboard.press('ArrowRight');
+  expect((await audio()).effects).toBe(0.01); expect((await audio()).ambience).toBe(0.3);
+  await page.reload(); expect((await audio()).muted).toBe(true); expect((await audio()).effects).toBe(0.01);
+  await page.getByRole('button', { name: 'Begin the journey' }).click();
+  await page.getByRole('button', { name: 'Unmute sound (M)', exact: true }).click(); expect((await audio()).muted).toBe(false);
+  const before = (await snapshot(page)).player.x;
+  await page.getByText('Sound settings', { exact: true }).click(); await page.locator('#volume-ambience').focus(); await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(150); expect((await snapshot(page)).player.x).toBe(before);
+});
+
+test('an unavailable audio device does not stop the journey', async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(window, 'AudioContext', { value: class { constructor() { throw new Error('Audio device unavailable'); } } }));
+  await page.goto('/'); await page.keyboard.press('Enter');
+  await page.waitForFunction(() => (window as unknown as { __game: { audio: { status: string } } }).__game.audio.status === 'unavailable');
+  await reach(page, 5); expect((await snapshot(page)).phase).toBe('playing');
+});

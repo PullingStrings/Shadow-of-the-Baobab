@@ -1,6 +1,6 @@
 import * as T from 'three';
 import { warrior } from './meshes';
-import { HeroFrameClock } from './hero-pose';
+import { HeroFrameClock, breathingOffset } from './hero-pose';
 import { HERO_FRAMES, HERO_SHEETS, type HeroSheet } from './hero-frames';
 import { ground, platforms } from '../game/world';
 import type { GameState } from '../game/types';
@@ -15,6 +15,8 @@ export class PaintedHero {
   private material: T.MeshBasicMaterial;
   private sprite: T.Mesh<T.PlaneGeometry, T.MeshBasicMaterial>;
   private currentFrame = '';
+  private gridUVs: Float32Array;
+  private restY: Float32Array;
   constructor() {
     this.root.name = 'Painted hero — complete animation frames';
     const loader = new T.TextureLoader();
@@ -28,7 +30,9 @@ export class PaintedHero {
     this.textures = { movement: load('movement'), attack: load('attack') };
     this.material = new T.MeshBasicMaterial({ map: this.textures.movement, side: T.DoubleSide,
       transparent: true, alphaTest: 0.08, depthWrite: false, toneMapped: false, color: '#fff3e6' });
-    this.sprite = new T.Mesh(new T.PlaneGeometry(1, 1), this.material);
+    this.sprite = new T.Mesh(new T.PlaneGeometry(1, 1, 1, 12), this.material);
+    this.gridUVs = Float32Array.from(this.sprite.geometry.getAttribute('uv').array);
+    this.restY = new Float32Array(this.sprite.geometry.getAttribute('position').count);
     this.sprite.name = 'Whole-body painted frame'; this.sprite.castShadow = true;
     this.sprite.position.y = 0.025;
     this.sprite.renderOrder = 10; this.sprite.visible = false;
@@ -48,13 +52,15 @@ export class PaintedHero {
     if (id === this.currentFrame) return;
     const frame = HERO_FRAMES[id], sheet = HERO_SHEETS[frame.sheet];
     const [left, top, right, bottom] = frame.rect;
-    const corners = [[left, top], [right, top], [left, bottom], [right, bottom]];
     const position = this.sprite.geometry.getAttribute('position');
     const uv = this.sprite.geometry.getAttribute('uv');
-    corners.forEach(([x, y], i) => {
-      position.setXYZ(i, (x - frame.origin[0]) * frame.scale, (frame.origin[1] - y) * frame.scale, 0);
+    for (let i = 0; i < position.count; i++) {
+      const x = left + this.gridUVs[i * 2] * (right - left);
+      const y = bottom - this.gridUVs[i * 2 + 1] * (bottom - top);
+      this.restY[i] = (frame.origin[1] - y) * frame.scale;
+      position.setXYZ(i, (x - frame.origin[0]) * frame.scale, this.restY[i], 0);
       uv.setXY(i, x / sheet.width, 1 - y / sheet.height);
-    });
+    }
     position.needsUpdate = true; uv.needsUpdate = true;
     this.sprite.geometry.computeBoundingSphere();
     this.material.map = this.textures[frame.sheet];
@@ -68,6 +74,11 @@ export class PaintedHero {
     this.root.visible = p.invulnerable <= 0 || Math.floor(state.time * 18) % 2 === 0;
     this.sprite.visible = ready; this.fallback.root.visible = !ready;
     this.showFrame(frame.id);
+    const vertices = this.sprite.geometry.getAttribute('position');
+    for (let i = 0; i < vertices.count; i++) {
+      vertices.setY(i, this.restY[i] + (frame.action === 'idle' ? breathingOffset(state.time, this.restY[i]) : 0));
+    }
+    vertices.needsUpdate = true; this.sprite.geometry.computeBoundingSphere();
     this.sprite.rotation.z = frame.action === 'dead' ? -1.2 : 0;
     if (!ready) {
       const run = p.grounded ? Math.min(1, Math.abs(p.vx) / 9) : 0.2;

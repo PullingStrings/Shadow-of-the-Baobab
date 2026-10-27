@@ -1,5 +1,6 @@
 import * as T from 'three';
-import { warrior, warthog } from './meshes';
+import { warrior } from './meshes';
+import { PaintedLion } from './lion';
 import { PaintedHero } from './hero';
 import { buildWorld } from './world';
 import { FollowCamera } from './camera';
@@ -11,7 +12,7 @@ export class GameView {
   readonly follow = new FollowCamera();
   private hero = new PaintedHero();
   private queen = warrior(true);
-  private boars = [warthog(), warthog(), warthog()];
+  private lions = [new PaintedLion(), new PaintedLion(), new PaintedLion()];
   private world;
   private opening;
   private ambient = new T.HemisphereLight('#c8e4d2', '#48513e', 2.8);
@@ -42,7 +43,7 @@ export class GameView {
     this.rim.position.set(-10, 5, -12); this.scene.add(this.rim);
     this.world = buildWorld(this.scene);
     this.opening = buildOpening(this.scene);
-    this.scene.add(this.hero.root, this.hero.shadow, this.queen.root, ...this.boars.map(b => b.root));
+    this.scene.add(this.hero.root, this.hero.shadow, this.queen.root, ...this.lions.flatMap(lion => [lion.root, lion.shadow]));
     this.queen.root.position.set(94, 3, 0.65);
     const resize = () => {
       const { width, height } = canvas.getBoundingClientRect();
@@ -53,13 +54,7 @@ export class GameView {
   render(state: GameState, dt: number, time: number) {
     const p = state.player;
     this.hero.update(state);
-    state.enemies.forEach((e, i) => {
-      const b = this.boars[i]; b.root.visible = e.hp > 0;
-      b.root.position.set(e.x, e.mode === 'windup' ? Math.sin(time * 35) * 0.035 : 0, 0.65);
-      b.root.scale.x = e.facing;
-      b.root.rotation.z = e.mode === 'windup' ? -0.08 : 0;
-      b.legs.forEach((l, j) => l.rotation.z = Math.sin(state.time * (e.mode === 'charge' ? 28 : 9) + j * 2) * (e.mode === 'recover' ? 0 : 0.3));
-    });
+    state.enemies.forEach((enemy, i) => this.lions[i].update(enemy, state.time));
     this.queen.arm.rotation.z = Math.sin(time * 2) * 0.15;
     this.world.ring.visible = state.phase !== 'won';
     this.world.ring.rotation.z = time * 0.12;

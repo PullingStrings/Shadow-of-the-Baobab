@@ -22,7 +22,8 @@ export function heroFrame(player: Player, time: number, phase: Phase, distance =
   }
   if (landing) return sample('land', 'jump-3');
   if (Math.abs(player.vx) > 0.25) return sample('run', `run-${Math.floor(Math.max(0, distance) / STRIDE_DISTANCE * 8) % 8}`);
-  return sample('idle', `idle-${Math.floor(Math.max(0, time) * 3) % 4}`);
+  // Keep one registered stance: flipping near-identical drawings caused popping.
+  return sample('idle', 'idle-0');
 }
 
 /** A gait follows travelled distance, so stopped/slower feet do not keep cycling. */
@@ -45,4 +46,11 @@ export class HeroFrameClock {
     this.previousTime = state.time; this.previousX = p.x; this.wasGrounded = p.grounded;
     return heroFrame(p, state.time, state.phase, this.distance, state.time < this.landingUntil);
   }
+}
+
+/** Smooth upper-body breathing; boots/legs below the waist remain pinned. */
+export function breathingOffset(time: number, height: number): number {
+  if (height <= 0.95) return 0;
+  const t = Math.max(0, Math.min(1, (height - 0.95) / 1.35));
+  return Math.sin(time * Math.PI / 2) * 0.018 * t * t * (3 - 2 * t);
 }

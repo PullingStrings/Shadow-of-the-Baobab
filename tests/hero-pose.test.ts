@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createGame } from '../src/game/state.js';
 import { HERO_FRAMES, HERO_SHEETS } from '../src/view/hero-frames.js';
-import { heroFrame, HeroFrameClock, STRIDE_DISTANCE } from '../src/view/hero-pose.js';
+import { heroFrame, HeroFrameClock, STRIDE_DISTANCE, breathingOffset } from '../src/view/hero-pose.js';
 
 test('all 20 complete frames have valid bounds, foot origins and a constant scale per sheet', () => {
   assert.equal(Object.keys(HERO_FRAMES).length, 20);
@@ -61,4 +61,16 @@ test('damage, death and ready states select safe existing frames', () => {
   assert.equal(heroFrame(state.player, 0, 'playing').action, 'hurt');
   assert.equal(heroFrame(state.player, 0, 'dead').action, 'dead');
   assert.equal(heroFrame(state.player, 0, 'ready').id, 'idle-0');
+});
+
+test('idle holds one stance, breathing is continuous and feet remain pinned', () => {
+  const state = createGame('playing');
+  for (let i = 0; i <= 480; i++) {
+    const time = i / 120;
+    assert.equal(heroFrame(state.player, time, 'playing').id, 'idle-0');
+    for (const height of [0, 0.5, 0.95]) assert.equal(breathingOffset(time, height), 0);
+    assert.ok(Math.abs(breathingOffset(time, 2.6)) <= 0.018001);
+    if (i) assert.ok(Math.abs(breathingOffset(time, 2.6) - breathingOffset(time - 1 / 120, 2.6)) < 0.0003);
+  }
+  assert.ok(Math.abs(breathingOffset(4, 2.6)) < 0.000001);
 });

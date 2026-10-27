@@ -2,7 +2,7 @@
 
 ## Direction
 
-User-selected: painted cinematic, detailed textures, warm atmospheric light and sunset colours. The opening combines amber/burnt-orange sunlight, dusty lavender shadows, a monumental baobab and textured sandstone. Keep the hero/enemy silhouettes and gold landing edges readable. The opening pass addresses scenery; a subsequent hero pass adds painted frame-based character art while keeping the existing queen and enemies.
+User-selected: painted cinematic, detailed textures, warm atmospheric light and sunset colours. The opening combines amber/burnt-orange sunlight, dusty lavender shadows, a monumental baobab and textured sandstone. Keep the hero/enemy silhouettes and gold landing edges readable. The opening pass addresses scenery; a subsequent hero pass adds painted frame-based character art while keeping the existing queen. Painted lions and tree ledges were added in the grove polish revision.
 
 ## Included assets
 
@@ -80,6 +80,10 @@ Registration: each figure's standing full height around 74% of its cell height. 
 
 ### Review evidence and remaining checks
 
-[Animated registration preview](previews/hero-animation.gif) and [20-frame contact sheet](previews/painted-hero-frames.webp) were rendered from actual runtime UV/geometry registration against a neutral background. They show proportions and frame alignment; they do not exercise the WebGL camera, tint, alpha test, fog or cast shadows. The animated comparison uses a slower review cadence; game gait timing follows travelled distance.
+[Animated registration preview](previews/idle-lion.gif) and [20-frame contact sheet](previews/painted-hero-frames.webp) were rendered from actual runtime UV/geometry registration against a neutral background. They show proportions and frame alignment; they do not exercise the WebGL camera, tint, alpha test, fog or cast shadows. The animated comparison uses a slower review cadence; game gait timing follows travelled distance.
 
 Check both facing directions, idle-to-run and jump/landing transitions, sustained attacks, damage, pause/restart, first ledges, ravine and atlas-load failure in the actual Docker game. Inspect cape/weapon clipping at frame boundaries and feet registration at normal camera scale. Docker/browser/hardware performance checks remain pending. PR #2 is updated in place; merge #1 first, then retarget #2 to main before merging.
+
+## Grove polish revision
+
+The user approved the hero’s painted design but reported idle popping and disliked the grove’s stone pillars and low-poly enemy. [GROVE_POLISH.md](GROVE_POLISH.md) records the stable breathing treatment, painted tree ledges, lion sheet, asset provenance, generation prompts, review previews and verification limits. The hero’s approved run/jump/attack sheets are unchanged.

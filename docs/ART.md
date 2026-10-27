@@ -2,7 +2,7 @@
 
 ## Direction
 
-User-selected: painted cinematic, detailed textures, warm atmospheric light and sunset colours. The opening combines amber/burnt-orange sunlight, dusty lavender shadows, a monumental baobab and textured sandstone. Keep the hero/enemy silhouettes and gold landing edges readable. The opening pass addresses scenery; a subsequent hero pass adds painted modular character art while keeping the existing queen and enemies.
+User-selected: painted cinematic, detailed textures, warm atmospheric light and sunset colours. The opening combines amber/burnt-orange sunlight, dusty lavender shadows, a monumental baobab and textured sandstone. Keep the hero/enemy silhouettes and gold landing edges readable. The opening pass addresses scenery; a subsequent hero pass adds painted frame-based character art while keeping the existing queen and enemies.
 
 ## Included assets
 
@@ -29,18 +29,57 @@ No third-party reference artwork or models are shipped. Artwork is served locall
 - Dust and grass add movement without obscuring enemies or consuming excessive frame time.
 
 
-## Painted hero atlas
+## Complete hero animation frames — revision after playtest
 
-`public/art/hero/warrior-parts.webp` is an original built-in ImageGen output from 27 October 2026, converted to RGBA WebP at quality 91 without resizing (1774×887; about 258 KiB). Actual opaque bounds were measured after generation; the renderer uses explicit pixel rectangles and anatomical anchors rather than assuming a perfectly regular atlas grid. Shins and boots are separate runtime regions of the same generated lower-leg piece, with an overlapping ankle seam. Transparent alpha is preserved.
+The user liked the painted character but reported that the modular body was proportioned/assembled incorrectly, and supplied full-character animation-sheet examples. This revision replaces the segmented rig with coherent, frame-by-frame whole-body artwork. It keeps the original painted design rather than adopting the references' chibi/pixel style.
 
-The hero is fictional. The design uses dark brown skin, tied-back locs, rust-orange cloth, indigo trousers, leather wraps and restrained brass details. It does not represent a named African culture. Its amber highlights and violet shadows are painted into the image. MeshBasicMaterial preserves that artwork; the far limbs have a cooler tint for depth. No photorealistic skin simulation or dynamic material lighting is claimed.
+| Runtime asset | Origin | Contents |
+| --- | --- | --- |
+| `public/art/hero/hero-motion.webp` | Original built-in ImageGen output, 27 October 2026; RGBA WebP conversion, quality 92, no resizing | 1536×1024: four idle, eight run, four jump/landing poses |
+| `public/art/hero/hero-attack.webp` | Original built-in ImageGen output referencing the movement sheet, same date; RGBA WebP conversion, quality 92, no resizing | 1536×1024: four horizontal spear-thrust poses |
 
-**Hero generation prompt:** Use case: stylized-concept. Production 2D skeletal-animation SPRITE PARTS ATLAS for the hero of Shadow of the Baobab, a painted cinematic African fantasy side-scrolling game. Transparent background. Wide canvas 2048 by 1024, EXACTLY FOUR equal columns and TWO equal rows, eight separate isolated sprite parts. Each part centred inside its own rectangular cell with generous transparent gutters (at least 12% on every side). No visible grid, NO text, NO labels. All parts from ONE consistent adult athletic Black African male warrior viewed strictly in RIGHT-FACING SIDE PROFILE. Dark brown skin, tied-back short black locs, no face covering, focused expression, weathered rust-orange woven tunic and scarf, dark indigo trousers, dark brown leather boots and forearm wraps, restrained aged-brass edging. Detailed hand-painted brushwork, warm amber edge highlights from upper right, cool muted purple shadows, clear readable silhouette, painterly fantasy game illustration, NOT photoreal, NOT flat vector. Modular parts must not touch each other or cross cell boundaries. Top row left to right: (1) ONLY head and short neck, facing right, locs tied back close to head, no torso; (2) ONLY tunic-covered torso from shoulder to hips with sash and a few short cloth tails, side profile, NO head, NO arms, NO legs, NO long cape; (3) ONLY long flowing rust-orange cape/scarf trailing to the LEFT from its shoulder attachment on the RIGHT, broad flowing fabric with painted folds, no body parts; (4) ONLY long straight horizontal wooden spear with slim aged-metal spearhead pointing RIGHT, no hand or body, no feather. Bottom row left to right: (5) ONLY one bare dark-brown muscular UPPER ARM with short orange sleeve cap, rounded shoulder at TOP and elbow at BOTTOM, hanging straight VERTICALLY DOWN; (6) ONLY one dark-brown FOREARM with leather wrist wrap ending in closed gripping fist at BOTTOM, rounded elbow at TOP, hanging straight VERTICALLY DOWN, no weapon; (7) ONLY one indigo-trousered THIGH, rounded hip at TOP and knee at BOTTOM, hanging VERTICALLY DOWN; (8) ONLY one SHIN and leather BOOT, knee at TOP, sole at BOTTOM and toes pointing RIGHT, hanging VERTICALLY DOWN. These are isolated components for joint rotation in an actual game, not assembled figures or a concept poster. Preserve clean alpha silhouettes without cast shadows, floor, scenery, checkerboard painting, or backdrop.
+The earlier `warrior-parts.webp` and its segmented-rig preview are superseded and removed from the current tree; their history remains in Git. No third-party example sprites are shipped. The character is fictional, without attribution to a named culture. Lighting is baked into the paintings, not simulated 3D skin/cloth lighting.
 
-The atlas was converted to WebP; the layout and painted pixels were otherwise retained. UV rectangles, joint anchors, separate boot regions and cape deformation are defined in code. No further image-generation edits or CLI/API image mode were used.
+### Registration and playback
 
-### Hero review
+Explicit rectangles in `src/view/hero-frames.ts` include transparent gutters around measured silhouettes. This avoids clipping spear tips/capes that cross the generator's nominal grid. Foot/root origins register the poses; each sheet has a single shared scale, so a crouched frame is not enlarged to standing height. Running flight frames retain their deliberate foot lift. The runtime changes the UVs/geometry of a single sprite instead of rotating disconnected limbs. Gait follows distance, and attack frames follow the existing timer. Weapon silhouettes are authored into the frames and can differ slightly from the numerical combat range; collision rules are unchanged.
 
-[Idle / run / rise / strike assembly preview](previews/painted-hero-rig.webp) was rendered in a temporary CPU triangle rasteriser using the actual Three.js mesh transforms and atlas UVs. It shows joint assembly on a neutral background. It omits WebGL shading, alpha-test behaviour, fog, cast shadows, material tint and the world/camera, so it is not proof of in-game appearance.
+### Movement generation prompt
 
-In Docker, inspect both facing directions, idle breathing, full-speed running, rising and falling, landing on the first ledge, repeated spear attacks, damage flash, death, pause/resume and restart. Watch for shoulder/ankle seams, sprite alpha edges, legibility at normal camera scale and foreground occlusion. Also check that blocking the atlas request retains the procedural hero. The first environment PR is the base of the separate hero PR; merge them in that order.
+Use case: stylized-concept. Create a production animation SPRITE SHEET of COMPLETE ASSEMBLED CHARACTERS, not separate parts. Reference image defines ONLY the identity, painted style, clothing colours and materials. Correct the proportions: athletic adult African male, natural long legs about half total height, head about one seventh total height, balanced shoulders and connected limbs. Same dark brown skin, tied-back black locs, rust-orange woven sleeveless tunic/scarf with subtle brass trim, dark indigo trousers and brown boots. Warm amber highlights, soft violet shadows, detailed painterly cinematic indie-game art. All views strictly right-facing side profile, fully drawn coherent figures with organically joined shoulders, elbows, hips, knees and ankles. Every figure carries the SAME straight wooden spear with metal point facing right, held around waist height; cape trails left but stays compact. No extra weapons, no giant armour or extra limbs.
+
+CANVAS: wide 3:2 aspect, ideally 2048x1360. Exactly FOUR equal columns and FOUR equal rows = SIXTEEN fully separate full-body animation frames in reading order. Every frame must stay wholly inside its own equal rectangular cell, including spear tip and cape. Transparent margins at every cell boundary. No grid, NO text/labels, NO background/floor/shadows/checkerboard.
+
+Registration: identical body scale and camera across all frames; figure pelvis consistently around 38% cell width; ground line at 88% cell height. Normal standing figure from 14% to 88% cell height. Keep anatomical sizes unchanged between frames, including jump poses. Preserve ample empty room to right for the spear. Do not spread any figure across adjacent cells.
+
+ROW 1: FOUR successive subtle IDLE breathing frames, same upright alert stance, relaxed knees, boots grounded, small natural chest/cloth differences. Avoid permanent crouch.
+
+ROW 2: RUN CYCLE frames 1-4: right leg leading contact, right leg weight-accepting down pose, legs passing with left knee advancing, airborne flight with left leg reaching forward. Arms and torso support an athletic spear-carrying run; cape responds to motion.
+
+ROW 3: RUN CYCLE frames 5-8: left leg leading contact, left leg weight-accepting down pose, legs passing with right knee advancing, airborne flight with right leg reaching forward. Make both strides clear and cyclic, not eight identical standing figures. Keep body sizes consistent.
+
+ROW 4: four JUMP poses in order: upward launch with one knee driving up, compact apex with bent legs, descending with legs extending beneath the pelvis, grounded landing compression with knees bent. These are body poses only; do not move the entire figure upward within its cell to depict jumping. Jump translation happens in the game.
+
+Important: this is a practical animation atlas for runtime frame-by-frame playback. Every frame must be a complete, well-proportioned painted hero with spear, with no paper-puppet seams. Not a concept poster, not disassembled parts, no action VFX.
+
+### Attack generation prompt
+
+Use case: stylized-concept. Generate a matching SPEAR ATTACK animation sheet for the exact same fully assembled painted African male hero in the reference. Reference defines the complete character design, natural athletic proportions, rust-orange cloth, dark indigo trousers, brown boots, tied-back locs, face, sunset light and painterly technique. Keep them IDENTICAL. This is an animation asset, NOT a redesign. All characters right-facing strict side view, normal adult athletic proportions with long legs, head about 1/7 height, torso and limbs naturally joined. Preserve consistent body size between all frames.
+
+Canvas wide 3:2, 1536x1024 or larger. Exactly TWO equal columns and TWO equal rows, FOUR full-body frames. Every frame completely inside its own cell with transparent gutters, spear and cape fully visible. NO text, grid, background, scenery, floor, shadows or motion effects. Genuine transparent alpha.
+
+Frame1 top-left: anticipation, feet planted, knees flexed, torso turns back slightly, both hands withdraw the SAME wooden spear horizontally at WAIST height. Spear tip facing right, shaft straight and level.
+
+Frame2 top-right: FULL FORWARD THRUST. Long athletic lunge, front boot planted in front and rear boot planted behind, hips turn with thrust, arms extend naturally to the right, BOTH hands visibly grip the shaft. Spear shaft perfectly HORIZONTAL at waist height, tip right. No upward slash, no diagonal weapon.
+
+Frame3 bottom-left: follow-through/held extension, weight over bent front knee, arms and spear remain fully extended to the right at the same waist-height horizontal attack line. Rear leg braced, cape trails left.
+
+Frame4 bottom-right: recovery, torso returns upright, arms draw the horizontal spear back to a ready position, both boots planted, knees relaxing.
+
+Registration: each figure's standing full height around 74% of its cell height. Keep enough transparent space to left for the cape and right for the full extended spear. Pelvis/root around 37% of cell width. Ground baseline around 88% cell height. Do not shorten legs or inflate the head. These are FOUR complete expressive body poses for a fast 0.3-second thrust, not disconnected skeletal parts. Same warm hand-painted detail as the reference.
+
+### Review evidence and remaining checks
+
+[Animated registration preview](previews/hero-animation.gif) and [20-frame contact sheet](previews/painted-hero-frames.webp) were rendered from actual runtime UV/geometry registration against a neutral background. They show proportions and frame alignment; they do not exercise the WebGL camera, tint, alpha test, fog or cast shadows. The animated comparison uses a slower review cadence; game gait timing follows travelled distance.
+
+Check both facing directions, idle-to-run and jump/landing transitions, sustained attacks, damage, pause/restart, first ledges, ravine and atlas-load failure in the actual Docker game. Inspect cape/weapon clipping at frame boundaries and feet registration at normal camera scale. Docker/browser/hardware performance checks remain pending. PR #2 is updated in place; merge #1 first, then retarget #2 to main before merging.

@@ -1,4 +1,4 @@
-export type HeroSheet = 'movement' | 'attack';
+export type HeroSheet = 'movement' | 'attack' | 'slash';
 export interface HeroFrame {
   sheet: HeroSheet;
   rect: [number, number, number, number];
@@ -8,6 +8,7 @@ export interface HeroFrame {
 export const HERO_SHEETS = {
   movement: { file: 'hero-motion.webp', width: 1536, height: 1024 },
   attack: { file: 'hero-attack.webp', width: 1536, height: 1024 },
+  slash: { file: 'hero-slash.webp', width: 1536, height: 1024 },
 };
 // Measured opaque bounds plus transparent gutters. Generative sheets are not
 // perfect grids: some capes/spear tips cross nominal row/column boundaries.
@@ -38,7 +39,14 @@ const attacks: [HeroFrame['rect'], HeroFrame['origin']][] = [
   [[52, 594, 787, 981], [321, 976]],
   [[821, 532, 1503, 982], [1126, 977]],
 ];
+const slashes: [HeroFrame['rect'], HeroFrame['origin']][] = [
+  [[28, 10, 575, 502], [385, 495]],
+  [[790, 45, 1485, 505], [1110, 498]],
+  [[98, 583, 810, 970], [375, 963]],
+  [[823, 554, 1518, 969], [1110, 962]],
+];
 export const HERO_FRAMES: Record<string, HeroFrame> = Object.fromEntries([
   ...movement.map(([id, rect, origin]) => [id, { sheet: 'movement' as const, rect, origin, scale: motionScale }]),
+  ...slashes.map(([rect, origin], i) => [`slash-${i}`, { sheet: 'slash' as const, rect, origin, scale: 2.65 / 396 }]),
   ...attacks.map(([rect, origin], i) => [`attack-${i}`, { sheet: 'attack' as const, rect, origin, scale: attackScale }]),
 ]);

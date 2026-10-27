@@ -4,8 +4,8 @@ import { createGame } from '../src/game/state.js';
 import { HERO_FRAMES, HERO_SHEETS } from '../src/view/hero-frames.js';
 import { heroFrame, HeroFrameClock, STRIDE_DISTANCE, breathingOffset } from '../src/view/hero-pose.js';
 
-test('all 20 complete frames have valid bounds, foot origins and a constant scale per sheet', () => {
-  assert.equal(Object.keys(HERO_FRAMES).length, 20);
+test('all 24 complete frames have valid bounds, foot origins and a constant scale per sheet', () => {
+  assert.equal(Object.keys(HERO_FRAMES).length, 24);
   const scales: Record<string, number> = {};
   for (const frame of Object.values(HERO_FRAMES)) {
     const sheet = HERO_SHEETS[frame.sheet], [l, t, r, b] = frame.rect;
@@ -73,4 +73,13 @@ test('idle holds one stance, breathing is continuous and feet remain pinned', ()
     if (i) assert.ok(Math.abs(breathingOffset(time, 2.6) - breathingOffset(time - 1 / 120, 2.6)) < 0.0003);
   }
   assert.ok(Math.abs(breathingOffset(4, 2.6)) < 0.000001);
+});
+
+test('slash selects its own four complete poses and freezes with the attack timer', () => {
+  const state = createGame('playing'); state.player.attackKind = 'slash';
+  for (const [remaining, index] of [[0.42, 0], [0.32, 1], [0.16, 2], [0.04, 3]]) {
+    state.player.attack = remaining;
+    assert.equal(heroFrame(state.player, 0, 'playing').id, `slash-${index}`);
+    assert.deepEqual(heroFrame(state.player, 0, 'playing'), heroFrame(state.player, 10, 'playing'));
+  }
 });

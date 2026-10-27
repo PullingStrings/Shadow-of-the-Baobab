@@ -16,12 +16,13 @@ Open **http://localhost:5173** in a desktop browser with WebGL 2 and hardware ac
 | --- | --- |
 | A / D or left / right arrows | Move |
 | Space, W or up arrow | Jump |
-| J or X (hold for repeated strikes) | Spear attack |
+| J (hold to repeat) | Long, fast spear poke |
+| K or X (hold to repeat) | Shorter, broader spear slash |
 | Escape | Pause / resume |
 | Enter | Begin, resume, respawn or replay |
 | R | Restart the level |
 
-Lions crouch before charging. Jump over a charge, or strike toward them with your spear. Each takes two hits. You have four health segments and brief invulnerability after damage. Falling into the ravine is fatal. Respawning resets the level; there are no checkpoints. Reach the queen **on the raised sanctuary**, not underneath it. Thin warm highlights mark the opening grove’s climbable branch edges. Later stone ledges retain gold lips and end brackets; decorative background ruins are unmarked. These ledges are one-way platforms: jump through their underside and land on top.
+Lions crouch before charging. Jump over a charge, or strike toward them with your spear. You can strike first, including during patrol or windup. Each takes three hits from either attack. You have four health segments and brief invulnerability after damage. Falling into the ravine is fatal. Respawning resets the level; there are no checkpoints. Reach the queen **on the raised sanctuary**, not underneath it. Thin warm highlights mark the opening grove’s climbable branch edges. Later stone ledges retain gold lips and end brackets; decorative background ruins are unmarked. These ledges are one-way platforms: jump through their underside and land on top.
 
 ## Checks (Docker only)
 
@@ -67,19 +68,19 @@ Scope and acceptance criteria are recorded in [docs/PROJECT.md](docs/PROJECT.md)
 
 The first ground segment (world X −12 to 33) explores a painted cinematic direction with amber sunset light, lavender shadows and textured stone. `src/view/opening.ts` owns its backdrop, procedural earth texture, grass, roots, haze and dust. `src/view/world.ts` applies the sandstone/earth materials to the opening terrain and first ledges. `src/view/scene.ts` blends the opening light back to the original lighting as the camera moves from X 28 to 44. Background art follows more slowly than the gameplay camera for parallax; it does not replace the collidable world.
 
-The original backdrop and stone WebP assets total approximately 506 KiB; the tree-ledge atlas adds approximately 516 KiB in `public/art/opening/`. Asset origins and generation prompts are in [docs/ART.md](docs/ART.md). Grass uses four instanced draw batches. All vegetation and roots are decorative. The grove’s three stone platforms are dressed as painted tree boughs at the same collision coordinates; later ledges retain their gold-edge convention. Camera framing, physics and combat rules are preserved. The queen remains a procedural cutout; the enemy is now a painted lion. The hero pass described below adds painted frame-based character art; the opening remains an art-direction test rather than a full reproduction of the concept image.
+The original backdrop and stone WebP assets total approximately 506 KiB; the tree-ledge atlas adds approximately 516 KiB in `public/art/opening/`. Asset origins and generation prompts are in [docs/ART.md](docs/ART.md). Grass uses four instanced draw batches. All vegetation and roots are decorative. The grove’s three stone platforms are dressed as painted tree boughs at the same collision coordinates; later ledges retain their gold-edge convention. Camera framing and physics are preserved. The queen remains a procedural cutout; the enemy is now a painted lion. The hero pass described below adds painted frame-based character art; the opening remains an art-direction test rather than a full reproduction of the concept image.
 
 To review locally, start with `docker compose up --build`, begin the journey, walk through the first grove, jump onto the first highlighted branches, pause, and restart. Compare the opening at 1440×900 and 1920×1080, then cross the ravine to check the transition to the existing scenery. Run the checks above before merging. **This pass has not yet been visually verified in WebGL or checked by the Docker build/test suites in the authoring environment**; see STATE.md for the checks actually performed.
 
 ## Painted hero pass
 
-The hero uses **complete painted animation frames**, replacing the earlier body-part puppet. The two local RGBA WebP sheets in `public/art/hero/` contain 20 coherent full-body poses: four idle, eight running, four rise/apex/fall/landing and four spear-attack frames. The character keeps the sunset palette and materials, with balanced adult proportions and naturally connected shoulders, arms and legs.
+The hero uses **complete painted animation frames**, replacing the earlier body-part puppet. The three local RGBA WebP sheets in `public/art/hero/` contain 24 coherent full-body poses: four idle, eight running, four rise/apex/fall/landing and four poke and four slash frames. The character keeps the sunset palette and materials, with balanced adult proportions and naturally connected shoulders, arms and legs.
 
 `src/view/hero-frames.ts` records measured crop bounds, foot/root origins and one fixed pixel scale per sheet. Frames are not independently stretched to fit, and the renderer draws just one full-body sprite at a time. `src/view/hero-pose.ts` selects frames from simulation state: gait advances with grounded distance travelled, jump poses follow vertical velocity, landing compresses briefly, and thrust phases follow the existing 0.3-second attack timer. Pausing freezes playback; restart resets it. Damage reuses a braced frame with the existing flash, and death reuses a collapsed landing pose.
 
-`src/view/hero.ts` retains the procedural loading/error fallback and terrain-aware contact shadow. The obsolete parts atlas was removed. Both new sheets together are approximately 720 KiB; no new dependency or Docker change is required. Movement, hitboxes, damage, attack timing/reach, level data, camera and enemy rules are unchanged. The weapon is painted into each pose; its silhouette is not an independently simulated spear or a pixel-perfect trace of the collision range.
+`src/view/hero.ts` retains the procedural loading/error fallback and terrain-aware contact shadow. The obsolete parts atlas was removed. The original movement/poke sheets together are approximately 720 KiB; no new dependency or Docker change is required. Movement, level data and camera remain unchanged. The combat update adds distinct attack windows, a body-based lion hurtbox and three-hit health. The weapon is painted into each pose; its silhouette is not an independently simulated spear or a pixel-perfect trace of the collision range.
 
-Seven hero regression tests cover frame bounds/scales, attack timing, distance-based gait, jump/landing transitions, pause/restart, read-only state and stable breathing. Additional lion tests cover enemy pose selection and atlas masks. They run with the existing Docker test command. [Animated registration preview](docs/previews/idle-lion.gif) and [all 20 registered frames](docs/previews/painted-hero-frames.webp) are software renders of the actual runtime crop/geometry data, **not WebGL gameplay captures**. Syntax and native structural checks passed; Docker build/tests and live WebGL/performance review are still pending in the authoring environment.
+Eight hero regression tests cover frame bounds/scales, attack timing, distance-based gait, jump/landing transitions, pause/restart, read-only state and stable breathing. Additional lion tests cover enemy pose selection and atlas masks. They run with the existing Docker test command. [Animated registration preview](docs/previews/idle-lion.gif) and [all 20 registered frames](docs/previews/painted-hero-frames.webp) are software renders of the actual runtime crop/geometry data, **not WebGL gameplay captures**. Syntax and native structural checks passed; Docker build/tests and live WebGL/performance review are still pending in the authoring environment.
 
 ## Prototype boundaries
 
@@ -91,6 +92,12 @@ The idle pose holds a single registered drawing. A slow four-second deformation 
 
 The grove’s first three platforms (X 14, 21 and 31) use painted trees and broad boughs with a fine warm landing-edge highlight. No stone pillars or beige slabs are drawn there. Their position, width and jump/collision rules are unchanged. Later areas retain their existing stone scenery.
 
-Painted lions replace the procedural boars. An eight-pose atlas supplies stalking, windup crouch, extended/gathered gallop and recovery, using the existing patrol/charge timing, speed, damage and health. Alpha-contour meshes isolate each silhouette where generated sheet bounds overlap. Lion-shaped and wooden-bough loading/error fallbacks keep hazards and landing edges visible.
+Painted lions replace the procedural boars. An eight-pose atlas supplies stalking, windup crouch, extended/gathered gallop and recovery, using the existing patrol/charge timing, speed and damage, with three-hit health. Alpha-contour meshes isolate each silhouette where generated sheet bounds overlap. Lion-shaped and wooden-bough loading/error fallbacks keep hazards and landing edges visible.
 
 See [grove polish notes and generation prompts](docs/GROVE_POLISH.md), [tree/lion assembly preview](docs/previews/grove-tree-lion.webp) and [idle/lion animation preview](docs/previews/idle-lion.gif). These are software assembly renders, not live gameplay captures. Docker build/tests and live WebGL review remain pending.
+
+## Poke and slash
+
+J pokes (0.3 s action, 0.4 s repeat); K or X slashes (0.42 s action, 0.55 s repeat). Both deal one damage per lion per swing. Poke reaches farther; slash covers a broader vertical band. A successful hit interrupts the lion into recovery. Body overlap replaces the centre-only melee check, so its visible front can be struck before it charges. A brief flash and three health pips show successful damage.
+
+[Combat details and verification](docs/COMBAT.md) · [Eight runtime attack poses, software preview](docs/previews/poke-slash.webp). Docker build and browser checks remain pending.

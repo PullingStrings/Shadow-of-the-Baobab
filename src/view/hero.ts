@@ -10,7 +10,7 @@ export class PaintedHero {
   readonly shadow: T.Mesh<T.PlaneGeometry, T.MeshBasicMaterial>;
   private fallback = warrior();
   private clock = new HeroFrameClock();
-  private loaded = { movement: false, attack: false };
+  private loaded = { movement: false, attack: false, slash: false };
   private textures: Record<HeroSheet, T.Texture>;
   private material: T.MeshBasicMaterial;
   private sprite: T.Mesh<T.PlaneGeometry, T.MeshBasicMaterial>;
@@ -27,7 +27,7 @@ export class PaintedHero {
       texture.colorSpace = T.SRGBColorSpace; texture.anisotropy = 4;
       return texture;
     };
-    this.textures = { movement: load('movement'), attack: load('attack') };
+    this.textures = { movement: load('movement'), attack: load('attack'), slash: load('slash') };
     this.material = new T.MeshBasicMaterial({ map: this.textures.movement, side: T.DoubleSide,
       transparent: true, alphaTest: 0.08, depthWrite: false, toneMapped: false, color: '#fff3e6' });
     this.sprite = new T.Mesh(new T.PlaneGeometry(1, 1, 1, 12), this.material);
@@ -73,7 +73,7 @@ export class PaintedHero {
     this.root.position.set(p.x, p.y, 0.65); this.root.scale.x = p.facing;
     this.root.visible = p.invulnerable <= 0 || Math.floor(state.time * 18) % 2 === 0;
     this.sprite.visible = ready; this.fallback.root.visible = !ready;
-    this.showFrame(frame.id);
+    this.showFrame(frame.action === 'slash' && !this.loaded.slash ? 'attack-1' : frame.id);
     const vertices = this.sprite.geometry.getAttribute('position');
     for (let i = 0; i < vertices.count; i++) {
       vertices.setY(i, this.restY[i] + (frame.action === 'idle' ? breathingOffset(state.time, this.restY[i]) : 0));

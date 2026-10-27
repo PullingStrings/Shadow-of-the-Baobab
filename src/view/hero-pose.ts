@@ -1,6 +1,7 @@
 import type { GameState, Phase, Player } from '../game/types.js';
+import { attackProgress } from '../game/attacks.js';
 
-export type HeroAction = 'idle' | 'run' | 'rise' | 'apex' | 'fall' | 'land' | 'strike' | 'hurt' | 'dead';
+export type HeroAction = 'idle' | 'run' | 'rise' | 'apex' | 'fall' | 'land' | 'strike' | 'slash' | 'hurt' | 'dead';
 export const STRIDE_DISTANCE = 3.6;
 
 /** Select complete painted poses. No body-part rotation or simulation writes. */
@@ -9,8 +10,11 @@ export function heroFrame(player: Player, time: number, phase: Phase, distance =
   if (phase === 'ready' || phase === 'won') return sample('idle', 'idle-0');
   if (phase === 'dead') return sample('dead', 'jump-3');
   if (player.attack > 0) {
-    // Existing 0.3s attack: anticipate, extend/hold in the active window, recover.
-    // The simulation still decides all hits/damage.
+    if (player.attackKind === 'slash') {
+      const t = attackProgress(player);
+      const index = t < 1 / 6 ? 0 : t < 0.48 ? 1 : t < 0.77 ? 2 : 3;
+      return sample('slash', `slash-${index}`);
+    }
     const elapsed = 0.3 - player.attack;
     const index = elapsed < 0.03 ? 0 : elapsed < 0.13 ? 1 : elapsed < 0.25 ? 2 : 3;
     return sample('strike', `attack-${index}`);
@@ -21,7 +25,7 @@ export function heroFrame(player: Player, time: number, phase: Phase, distance =
     return sample((['rise', 'apex', 'fall'] as const)[index], `jump-${index}`);
   }
   if (landing) return sample('land', 'jump-3');
-  if (Math.abs(player.vx) > 0.25) return sample('run', `run-${Math.floor(Math.max(0, distance) / STRIDE_DISTANCE * 8) % 8}`);
+  if (Math.abs(player.vx) > 0.25) return sample('run', `run-${Math.floor(Math.max(0, distance) / STRIDE_DISTANCE * 8 + 1e-9) % 8}`);
   // Keep one registered stance: flipping near-identical drawings caused popping.
   return sample('idle', 'idle-0');
 }

@@ -33,7 +33,7 @@ function updateUI() {
   $('#progress-label').textContent = state.phase === 'won' ? 'QUEEN RESCUED' : `SANCTUARY · ${Math.max(0, Math.ceil(END - state.player.x))} M`;
   $('#location').textContent = state.player.x < 30 ? 'THE WHISPERING GROVE' : state.player.x < 44 ? 'THE BROKEN CROSSING' : state.player.x < 80 ? 'THE ANCIENT TRAIL' : 'SANCTUARY OF THE QUEEN';
   const enemy = state.enemies.find(e => e.mode === 'windup' && Math.abs(e.x - state.player.x) < 9);
-  $('#toast').textContent = state.phase !== 'playing' ? '' : enemy ? 'A charge is coming. Jump, then strike.' : state.player.x < 10 ? 'A / D to move · SPACE to jump · Hold J to strike' : state.player.x < 18 ? 'Sunlit branch edges are safe to land on.' : state.player.x > 27 && state.player.x < 40 ? 'The trail is broken. Leap across the ravine.' : state.player.x > 83 ? 'Climb the sanctuary. Reach the queen.' : '';
+  $('#toast').textContent = state.phase !== 'playing' ? '' : enemy ? 'Strike first: J to poke · K / X to slash. Lions take 3 hits.' : state.player.x < 10 ? 'A / D move · SPACE jump · J poke · K / X slash' : state.player.x < 18 ? 'Sunlit branch edges are safe to land on.' : state.player.x > 27 && state.player.x < 40 ? 'The trail is broken. Leap across the ravine.' : state.player.x > 83 ? 'Climb the sanctuary. Reach the queen.' : '';
   if (lastPhase === state.phase) return;
   lastPhase = state.phase;
   overlay.classList.toggle('hidden', state.phase === 'playing');

@@ -25,6 +25,7 @@ $('#pause').addEventListener('click', togglePause);
 window.addEventListener('blur', () => { if (state.phase === 'playing') togglePause(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && state.phase === 'playing') togglePause(); });
 function updateUI() {
+  $('.stage').dataset.opening = String(state.player.x < 33);
   $('#health').innerHTML = Array.from({ length: 4 }, (_, i) => `<span class="heart ${i >= state.player.hp ? 'empty' : ''}"></span>`).join('');
   $('#health').setAttribute('aria-label', `Health: ${state.player.hp} of 4`);
   const progress = Math.min(100, Math.max(0, (state.bestX - 2) / (END - 2) * 100));

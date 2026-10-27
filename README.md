@@ -1,6 +1,6 @@
 # Shadow of the Baobab
 
-An original 2.5D action-platformer: cross the Whispering Grove, survive charging warthogs, leap the broken trail, and rescue the queen in the ruined sanctuary. Flat, layered character cutouts sit within a 3D forest. The opening grove has a painted sunset backdrop, textured sandstone and earth, exposed roots, wind-swaying grass and drifting dust; later areas retain the procedural prototype art. The hero’s cape ripples and trails during movement; the spear thrusts horizontally toward the facing direction. Original generated background and sandstone textures are included locally; no external asset service is used at runtime.
+An original 2.5D action-platformer: cross the Whispering Grove, survive charging warthogs, leap the broken trail, and rescue the queen in the ruined sanctuary. A painted, articulated hero travels through a 3D forest; the queen and warthogs retain their original cutout art. The opening grove has a painted sunset backdrop, textured sandstone and earth, exposed roots, wind-swaying grass and drifting dust; later areas retain the procedural prototype art. The hero’s cape ripples and trails during movement; the spear thrusts horizontally toward the facing direction. Original generated background and sandstone textures are included locally; no external asset service is used at runtime.
 
 ## Play locally
 
@@ -67,9 +67,17 @@ Scope and acceptance criteria are recorded in [docs/PROJECT.md](docs/PROJECT.md)
 
 The first ground segment (world X −12 to 33) explores a painted cinematic direction with amber sunset light, lavender shadows and textured stone. `src/view/opening.ts` owns its backdrop, procedural earth texture, grass, roots, haze and dust. `src/view/world.ts` applies the sandstone/earth materials to the opening terrain and first ledges. `src/view/scene.ts` blends the opening light back to the original lighting as the camera moves from X 28 to 44. Background art follows more slowly than the gameplay camera for parallax; it does not replace the collidable world.
 
-The art assets are compressed WebP files in `public/art/opening/` (approximately 506 KiB combined). Asset origins and generation prompts are in [docs/ART.md](docs/ART.md). Grass uses four instanced draw batches. All vegetation and roots are decorative. The gold-edged platform convention, camera framing, actor animation, physics and combat rules are preserved. Character art is still the existing cutout prototype; this is an environment direction test, not the final concept reproduced in full.
+The art assets are compressed WebP files in `public/art/opening/` (approximately 506 KiB combined). Asset origins and generation prompts are in [docs/ART.md](docs/ART.md). Grass uses four instanced draw batches. All vegetation and roots are decorative. The gold-edged platform convention, camera framing, actor animation, physics and combat rules are preserved. The queen and enemy art remain procedural cutouts. The hero pass described below adds painted modular character art; the opening remains an art-direction test rather than a full reproduction of the concept image.
 
 To review locally, start with `docker compose up --build`, begin the journey, walk through the first grove, jump onto the first gold-edged ledges, pause, and restart. Compare the opening at 1440×900 and 1920×1080, then cross the ravine to check the transition to the existing scenery. Run the checks above before merging. **This pass has not yet been visually verified in WebGL or checked by the Docker build/test suites in the authoring environment**; see STATE.md for the checks actually performed.
+
+## Painted hero pass
+
+The hero now uses a transparent painted atlas (`public/art/hero/warrior-parts.webp`, about 258 KiB) with separate head, tunic, cape, upper arms, forearms, thighs, shins and boots. `src/view/hero.ts` assembles and animates these pieces. `src/view/hero-pose.ts` computes view-only two-bone limb poses, breathing/run lean, rising/falling poses, attack reach and a short landing compression. Boots stay upright at the ankle; the cape deforms from a pinned shoulder. A soft contact shadow follows real terrain/platform support and disappears over the ravine.
+
+The spear follows the previous horizontal path: grip Y 1.35 and maximum facing-local tip X 2.95. Hit windows, collision dimensions, movement and enemy rules are unchanged. The original procedural hero remains visible while the atlas loads, or if it cannot load. The painted shading is baked into the artwork with separate cooler far-limb tint; it is not dynamic 3D skin or cloth lighting.
+
+Five regression tests in `tests/hero-pose.test.ts` cover limb reach, spear alignment, planted boots, action selection/state preservation and frozen pause poses. They run with the existing Docker `npm test` command; Docker execution is still pending in the authoring environment. A native structural harness swept 240 frames, checked atlas UVs and finite transforms, confirmed read-only game state, and exercised missing-art fallback and platform/ravine shadow support. The [rig assembly preview](docs/previews/painted-hero-rig.webp) is a software render of the actual geometry and atlas, **not a WebGL gameplay screenshot**. Live visual and performance checks remain pending.
 
 ## Prototype boundaries
 

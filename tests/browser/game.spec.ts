@@ -37,7 +37,8 @@ test('keyboard movement, vertical traversal, pause, combat, death and restart', 
   expect((await snapshot(page)).phase).toBe('playing'); expect(errors).toEqual([]);
 });
 test('complete the trail and rescue the queen using keyboard controls', async ({ page }) => {
-  await page.goto('/'); await page.keyboard.press('Enter');
+  const sanctuaryArt = ['sanctuary/valley.webp', 'sanctuary/shrine.webp', 'sanctuary/queen.webp', 'trail/sunset-trail.webp'].map(file => page.waitForResponse(response => response.url().endsWith(`/art/${file}`) && response.ok()));
+  await page.goto('/'); await Promise.all(sanctuaryArt); await page.keyboard.press('Enter');
   // Jump the first patrol, land before the ravine, and cross it from the edge.
   await reach(page, 16); await page.keyboard.down('KeyD'); await page.keyboard.press('Space');
   await page.waitForTimeout(1200); await page.keyboard.up('KeyD');
@@ -47,9 +48,13 @@ test('complete the trail and rescue the queen using keyboard controls', async ({
   await page.waitForFunction(() => (window as unknown as { __game: Snapshot }).__game.player.grounded);
   await reach(page, 43); await page.keyboard.down('KeyD'); await page.keyboard.press('Space');
   await page.waitForTimeout(1200); await page.keyboard.up('KeyD');
-  await reach(page, 68); await page.keyboard.down('KeyD'); await page.keyboard.press('Space');
+  await reach(page, 68);
+  await page.screenshot({ path: 'test-results/ancient-trail.png' });
+  await page.keyboard.down('KeyD'); await page.keyboard.press('Space');
   await page.waitForTimeout(1200); await page.keyboard.up('KeyD');
-  await reach(page, 86); await page.keyboard.press('Space'); await page.keyboard.down('KeyD');
+  await reach(page, 86);
+  await page.screenshot({ path: 'test-results/sanctuary-approach.png' });
+  await page.keyboard.press('Space'); await page.keyboard.down('KeyD');
   await page.waitForFunction(() => (window as unknown as { __game: Snapshot }).__game.player.x > 92);
   await page.keyboard.up('KeyD');
   await page.waitForFunction(() => (window as unknown as { __game: Snapshot }).__game.phase === 'won');
